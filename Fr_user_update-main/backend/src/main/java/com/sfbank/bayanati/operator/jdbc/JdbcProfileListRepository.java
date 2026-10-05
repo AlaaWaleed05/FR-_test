@@ -47,7 +47,7 @@ public class JdbcProfileListRepository implements ProfileListRepository {
 
   private static final String SELECT_COLUMNS =
       """
-      SELECT p.profile_id, p.account_number, p.branch_code, p.status,
+      SELECT p.profile_id, p.account_number, p.status,
              app.derived_provenance(p.profile_id, p.provenance) AS provenance,
              p.submitted_at, p.created_at,
              COALESCE(NULLIF(trim(concat_ws(' ', rr.name_ar_given, rr.name_ar_father,
@@ -76,10 +76,7 @@ public class JdbcProfileListRepository implements ProfileListRepository {
       ) ic ON true
       LEFT JOIN app.scan_result sr ON sr.cycle_id = ic.cycle_id
       LEFT JOIN app.registry_result rr ON rr.cycle_id = ic.cycle_id
-      LEFT JOIN ref.reference_item brn
-        ON brn.list_code = 'branch' AND brn.item_code = p.branch_code
-       AND brn.version = (SELECT rlv.version FROM ref.reference_list_version rlv
-                            WHERE rlv.list_code = 'branch' AND rlv.is_current)
+      
       LEFT JOIN LATERAL (
         SELECT reason_code, reason_version FROM app.profile_status_history
          WHERE profile_id = p.profile_id AND to_status = 'rejected'
@@ -93,8 +90,8 @@ public class JdbcProfileListRepository implements ProfileListRepository {
 
   private static final String EXPORT_SELECT_COLUMNS =
       """
-      SELECT p.reference_number, p.account_number, p.branch_code,
-             brn.label_en AS branch_label_en, brn.label_ar AS branch_label_ar,
+      SELECT p.reference_number, p.account_number, 
+             
              p.status, sc.label_en AS status_label_en,
              app.derived_provenance(p.profile_id, p.provenance) AS provenance,
              pcd.phone_number, pcd.email_address,
@@ -115,9 +112,7 @@ public class JdbcProfileListRepository implements ProfileListRepository {
         OR p.reference_number ILIKE :searchLike
         OR pcd.phone_number ILIKE :searchLike
         OR pcd.email_address ILIKE :searchLike
-        OR p.branch_code ILIKE :searchLike
-        OR brn.label_en ILIKE :searchLike
-        OR (brn.label_ar IS NOT NULL AND ref.ar_fold(brn.label_ar) LIKE '%' || ref.ar_fold(:search) || '%')
+        
         OR sr.identity_number ILIKE :searchLike
         OR sr.name_en_on_document ILIKE :searchLike
         OR (sr.name_ar_on_document IS NOT NULL
@@ -190,7 +185,7 @@ public class JdbcProfileListRepository implements ProfileListRepository {
                 new ProfileSummary(
                     rs.getString("profile_id"),
                     rs.getString("account_number"),
-                    rs.getString("branch_code"),
+                    
                     rs.getString("display_name_ar"),
                     rs.getString("display_name_en"),
                     rs.getString("status"),
@@ -242,10 +237,7 @@ public class JdbcProfileListRepository implements ProfileListRepository {
       where.append(" AND app.derived_provenance(p.profile_id, p.provenance) = :provenance");
       params.addValue("provenance", filter.provenance());
     }
-    if (filter.branchCode() != null) {
-      where.append(" AND p.branch_code = :branchCode");
-      params.addValue("branchCode", filter.branchCode());
-    }
+   
     if (filter.rejectionReasonCode() != null) {
       where.append(
           " AND EXISTS (SELECT 1 FROM app.profile_status_history h3"
@@ -277,9 +269,6 @@ public class JdbcProfileListRepository implements ProfileListRepository {
     return new ExportRow(
         rs.getString("reference_number"),
         rs.getString("account_number"),
-        rs.getString("branch_code"),
-        rs.getString("branch_label_en"),
-        rs.getString("branch_label_ar"),
         rs.getString("status"),
         rs.getString("status_label_en"),
         rs.getString("provenance"),
@@ -300,7 +289,7 @@ public class JdbcProfileListRepository implements ProfileListRepository {
       case SUBMITTED_AT -> "p.submitted_at";
       case ACCOUNT_NUMBER -> "p.account_number";
       case STATUS -> "p.status";
-      case BRANCH -> "p.branch_code";
+      
     };
   }
 
