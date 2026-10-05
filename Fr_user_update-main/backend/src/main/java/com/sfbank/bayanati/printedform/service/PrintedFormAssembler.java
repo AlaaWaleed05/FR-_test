@@ -1,7 +1,7 @@
 package com.sfbank.bayanati.printedform.service;
 
 import static com.sfbank.bayanati.printedform.domain.PrintedFormVocabulary.LIST_ADMIN_DIVISION;
-import static com.sfbank.bayanati.printedform.domain.PrintedFormVocabulary.LIST_BRANCH;
+
 import static com.sfbank.bayanati.printedform.domain.PrintedFormVocabulary.LIST_COUNTRY;
 import static com.sfbank.bayanati.printedform.domain.PrintedFormVocabulary.LIST_EDUCATION_LEVEL;
 import static com.sfbank.bayanati.printedform.domain.PrintedFormVocabulary.LIST_INCOME_SOURCE;
@@ -344,7 +344,7 @@ public final class PrintedFormAssembler {
       sections.add(
           PrintedSection.fullWidth("٣ — البيانات المُقدَّمة من العميل", List.of())
               .startingNewPage());
-      sections.add(PrintedSection.subHeading("الحساب والفرع", place(built, 3, 2)));
+      sections.add(PrintedSection.subHeading("الحساب", place(built, 2)));
       sections.add(PrintedSection.subHeading("قنوات الاتصال", place(built, 25, 26)));
       sections.add(
           PrintedSection.subHeading(
@@ -368,7 +368,7 @@ public final class PrintedFormAssembler {
     /** Every field this profile has, by source. Placement is {@link #sections()}'s business. */
     private List<PrintedField> buildAll() {
       List<PrintedField> all = new ArrayList<>();
-      all.addAll(accountAndBranch());
+      all.addAll(account());
       all.addAll(personalData());
       all.addAll(socialStatus());
       all.addAll(birthData());
@@ -426,12 +426,12 @@ public final class PrintedFormAssembler {
      * the body. It leaves the field set here; the header renders it from {@code
      * PrintedFormDocument} directly.
      */
-    private List<PrintedField> accountAndBranch() {
+    private List<PrintedField> account() {
       return List.of(
           // «الفرع» and «رقم الحساب البنكي», not «المصرف» and «رقم العميل» -- product-owner
           // corrections, 2026-09-14. Both are the vocabulary the rest of the system already uses.
-          customerField(2, "الفرع", arabic(reference(LIST_BRANCH, profile.branchCode()))),
-          customerField(3, "رقم الحساب البنكي", latin(profile.accountNumber())));
+          
+          customerField(2, "رقم الحساب البنكي", latin(profile.accountNumber())));
     }
 
     // ---- Personal data (4-11) ----------------------------------------------------------
