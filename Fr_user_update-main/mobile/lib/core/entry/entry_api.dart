@@ -9,7 +9,7 @@ abstract class EntryApi {
   /// `POST /api/v1/account-check`. Never throws for a business outcome (invalid/inactive/active
   /// are all normal `200` responses) — only for a malformed request (shouldn't happen from this
   /// client) or [BackendUnreachableException].
-  Future<AccountCheckResult> checkAccount(String branch, String accountNumber);
+  Future<AccountCheckResult> checkAccount( String accountNumber);
 
   /// `POST /api/v1/contact-channels`.
   ///
@@ -19,7 +19,7 @@ abstract class EntryApi {
   /// @throws SessionTemporarilyBlockedException 429 — Stage 2's phone lock is still active
   /// @throws BackendUnreachableException the backend could not be reached at all
   Future<ContactChannelsResult> submitContactChannels({
-    required String branch,
+    
     required String accountNumber,
     required String phoneNumber,
     required bool sms,
