@@ -40,7 +40,7 @@ public class ExportController {
       @RequestParam String format,
       @RequestParam(required = false) String status,
       @RequestParam(required = false) String provenance,
-      @RequestParam(required = false) String branchCode,
+     
       @RequestParam(required = false) String rejectionReasonCode,
       @RequestParam(required = false) String submittedFrom,
       @RequestParam(required = false) String submittedTo,
@@ -51,7 +51,7 @@ public class ExportController {
         new ProfileListFilter(
             status,
             provenance,
-            branchCode,
+            
             rejectionReasonCode,
             parseInstant(submittedFrom, "submittedFrom"),
             parseInstant(submittedTo, "submittedTo"),
