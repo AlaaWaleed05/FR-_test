@@ -136,9 +136,7 @@ public final class ProfileExportWriter {
     return new String[] {
       nullToEmpty(row.referenceNumber()),
       nullToEmpty(row.accountNumber()),
-      nullToEmpty(row.branchCode()),
-      nullToEmpty(row.branchLabelEn()),
-      nullToEmpty(row.branchLabelAr()),
+      
       nullToEmpty(row.status()),
       nullToEmpty(row.statusLabelEn()),
       nullToEmpty(row.provenance()),
