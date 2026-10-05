@@ -125,7 +125,7 @@ class EntryRepository {
         .insertOnConflictUpdate(
           LocalDraftCompanion.insert(
             id: const Value(0),
-            branchCode: Value(draft.branchCode),
+            
             accountNumber: Value(draft.accountNumber),
             phoneNumber: Value(draft.phoneNumber),
             smsSelected: Value(draft.smsSelected),
@@ -164,7 +164,7 @@ class EntryRepository {
   /// Stage 1b's action. On success, advances `LocalProgress` to `awaitingVerification` and
   /// caches the channel summary for the resume placeholder to render.
   Future<ContactChannelsResult> submitContactChannels({
-    required String branch,
+    
     required String accountNumber,
     required String phoneNumber,
     required bool sms,
@@ -172,7 +172,7 @@ class EntryRepository {
     String? emailAddress,
   }) async {
     final result = await _api.submitContactChannels(
-      branch: branch,
+      
       accountNumber: accountNumber,
       phoneNumber: phoneNumber,
       sms: sms,
@@ -205,13 +205,13 @@ class EntryRepository {
   /// ties a Stage 1b call back to a specific Stage 1a call"). Returns `null` only when no
   /// `LocalProgress` row exists, which `ContactChannelsScreen` should never actually hit — the
   /// screen is unreachable without one.
-  Future<({String branchCode, String accountNumber})?> verifiedAccount() async {
+  Future<String?> verifiedAccount() async {
     final progress = await (_db.select(
       _db.localProgress,
     )..where((t) => t.id.equals(0))).getSingleOrNull();
     if (progress == null) return null;
     return (
-      branchCode: progress.verifiedBranchCode,
+      
       accountNumber: progress.verifiedAccountNumber,
     );
   }
@@ -445,7 +445,7 @@ class EntryRepository {
     if (progress == null) {
       final draft = await loadDraft();
       return FreshStart(
-        draftBranchCode: draft.branchCode,
+        
         draftAccountNumber: draft.accountNumber,
       );
     }
@@ -453,7 +453,7 @@ class EntryRepository {
     AccountCheckResult result;
     try {
       result = await _api.checkAccount(
-        progress.verifiedBranchCode,
+        
         progress.verifiedAccountNumber,
       );
     } on BackendUnreachableException {
@@ -544,7 +544,7 @@ class EntryRepository {
         return ResumeDataEntry(stage: dataEntryStage, offline: offline);
       default:
         return ResumeContactChannels(
-          branchCode: progress.verifiedBranchCode,
+          
           accountNumber: progress.verifiedAccountNumber,
           offline: offline,
         );
