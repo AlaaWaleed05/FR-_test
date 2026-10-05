@@ -63,7 +63,7 @@ public class ProfileExportService {
     Map<String, Object> payload = new LinkedHashMap<>();
     payload.put("status", filter.status());
     payload.put("provenance", filter.provenance());
-    payload.put("branchCode", filter.branchCode());
+    
     payload.put("rejectionReasonCode", filter.rejectionReasonCode());
     payload.put(
         "submittedFrom",
