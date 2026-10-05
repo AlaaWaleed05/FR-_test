@@ -39,7 +39,7 @@ public interface ProfileRepository {
    *     onto it
    */
   void insertProfile(
-      UUID profileId, String branchCode, String accountNumber, Instant now, long auditEventId);
+      UUID profileId, String accountNumber, Instant now, long auditEventId);
 
   /**
    * Inserts {@code app.profile_customer_data}, populating only the two fields Stage 1b collects
@@ -126,7 +126,7 @@ public interface ProfileRepository {
    * or identity change. The {@code session_reentered} audit event already records the branch
    * submitted, so the previous value is on the permanent record.
    */
-  void updateBranchCode(UUID profileId, String branchCode);
+  
 
   /**
    * Re-checks, under {@code SELECT ... FOR UPDATE}, whether a profile {@link #findExisting} earlier
