@@ -314,7 +314,7 @@ public class ContactChannelsService {
             // The branch is refreshed to this submission's selection (V0061, BL-032): descriptive
             // data, so the latest choice wins; the session_reentered event above already carries
             // it.
-            profileRepository.updateBranchCode(profileId, branchCode);
+            
             profileRepository.invalidateOtpChallenges(profileId, now);
 
             for (ChannelDecision decision : decisions) {
