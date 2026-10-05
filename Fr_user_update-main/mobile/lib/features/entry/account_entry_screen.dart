@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/entry/entry_models.dart';
 import 'blocked_screen.dart';
 import '../../core/entry/entry_providers.dart';
-import '../../core/database/reference_database.dart';
+
 import '../../core/text/arabic_digit_input_formatter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/screen_title.dart';
@@ -24,7 +24,7 @@ class AccountEntryScreen extends ConsumerStatefulWidget {
 
 class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
   final _accountNumberController = TextEditingController();
-  String? _branchCode;
+
   String? _accountNumberError;
   bool _submitting = false;
   bool _unreachable = false;
@@ -40,7 +40,7 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
     final draft = await ref.read(entryRepositoryProvider).loadDraft();
     if (!mounted) return;
     setState(() {
-      _branchCode = draft.branchCode;
+      
       _accountNumberController.text = draft.accountNumber ?? '';
       _draftLoaded = true;
     });
@@ -57,16 +57,16 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
     final current = await repository.loadDraft();
     await repository.saveDraft(
       current.copyWith(
-        branchCode: _branchCode,
+        
         accountNumber: _accountNumberController.text,
       ),
     );
   }
 
   Future<void> _submit() async {
-    final branchCode = _branchCode;
+   
     final accountNumber = _accountNumberController.text.trim();
-    if (branchCode == null || accountNumber.isEmpty) return;
+    if (accountNumber.isEmpty) return;
 
     setState(() {
       _submitting = true;
@@ -75,7 +75,7 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
     });
 
     try {
-      final result = await ref.read(entryRepositoryProvider).checkAccount(branchCode, accountNumber);
+      final result = await ref.read(entryRepositoryProvider).checkAccount(accountNumber);
       if (!mounted) return;
       switch (result.continuation) {
         case AccountContinuation.proceed:
@@ -131,8 +131,7 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final branchCatalog = ref.watch(branchCatalogInitProvider);
-    final branchItems = ref.watch(branchItemsProvider);
+
 
     // **Walk comment 2c, and it is a DEFECT rather than a preference.** When a reference list
     // failed, the old screen swapped only the branch picker for an error line and left the
@@ -146,8 +145,7 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
     //
     // The launch screen already solved the sibling problem one screen earlier (D7.5/D8.3, keeping
     // raw exception text away from the customer); this is the same class of issue, one screen on.
-    final listsUnavailable = branchCatalog.hasError || branchItems.hasError;
-    final listsLoading = branchCatalog.isLoading || branchItems.isLoading;
+
 
     return Scaffold(
       appBar: BrandBanner(title: const ScreenTitle('بيانات الحساب')),
@@ -162,15 +160,9 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
       // `StageActionBar` sees a zero inset and becomes a no-op rather than double-counting.
       body: SafeArea(
         top: false,
-        child: !_draftLoaded || listsLoading
+        child: !_draftLoaded
             ? const Center(child: CircularProgressIndicator())
-            : listsUnavailable
-            ? _ReferenceListsUnavailable(
-                onRetry: () {
-                  ref.invalidate(branchCatalogInitProvider);
-                  ref.invalidate(branchItemsProvider);
-                },
-              )
+            
             : Column(
               children: [
                 // Walk comments 1/5 (2026-09-10). The loaded branch ONLY — this screen is the
@@ -201,7 +193,7 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
                   //     comment 5 asked for, delivered here rather than app-wide (a button THEME
                   //     is the app-wide half, and is filed, not built). See the note on that
                   //     button below for why it is NOT a `Spacer`.
-                        const Text('أدخل رقم حسابك والفرع الذي فتحت فيه الحساب للبدء.'),
+                        const Text('أدخل رقم حسابك للبدء.'),
                         const SizedBox(height: 16),
                         Card(
                           child: Padding(
@@ -209,15 +201,7 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                _BranchPicker(
-                                  rows: branchItems.requireValue,
-                                  selectedItemCode: _branchCode,
-                                  onChanged: (itemCode) {
-                                    setState(() => _branchCode = itemCode);
-                                    _saveDraft();
-                                  },
-                                ),
-                                const SizedBox(height: 16),
+                                
                                 TextField(
                                   controller: _accountNumberController,
                                   textInputAction: TextInputAction.done,
@@ -258,8 +242,8 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
                 // unreachable. This is the pattern the OTP and data-entry screens already use.
                 StageActionBar.previousNext(
                   onNext:
-                      _branchCode == null ||
-                          _accountNumberController.text.trim().isEmpty
+                      
+                      _accountNumberController.text.trim().isEmpty
                       ? null
                       : _submit,
                   busy: _submitting,
@@ -277,38 +261,9 @@ class _AccountEntryScreenState extends ConsumerState<AccountEntryScreen> {
 /// **2a: it does not name WHICH list failed.** The old copy said «تعذر تحميل قائمة الفروع» — the
 /// branch list is an implementation detail the customer has no use for, and naming it invites them
 /// to think the branch field specifically is at fault rather than their connection.
-class _ReferenceListsUnavailable extends StatelessWidget {
-  const _ReferenceListsUnavailable({required this.onRetry});
 
-  final VoidCallback onRetry;
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 2b: the connectivity icon, which says "your connection" faster than the sentence can.
-            Icon(Icons.wifi_off_outlined, size: 56, color: theme.colorScheme.error),
-            const SizedBox(height: 16),
-            Text(
-              'تعذر الاتصال، الرجاء التأكد من الاتصال بالإنترنت ثم أعد المحاولة',
-              textAlign: TextAlign.center,
-              // 2b: emphasis. This is the only thing on the screen, so it carries the weight.
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: 24),
-            FilledButton(onPressed: onRetry, child: const Text('أعد المحاولة')),
-          ],
-        ),
-      ),
-    );
-  }
-}
+
 
 /// The same treatment for the inline case, where the lists loaded but the account check itself
 /// could not reach the backend. Emphasis and the connectivity icon (2b) without taking the screen
@@ -337,30 +292,4 @@ class _InlineConnectivityError extends StatelessWidget {
   }
 }
 
-class _BranchPicker extends StatelessWidget {
-  const _BranchPicker({
-    required this.rows,
-    required this.selectedItemCode,
-    required this.onChanged,
-  });
 
-  final List<ReferenceItem> rows;
-  final String? selectedItemCode;
-  final ValueChanged<String?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      initialValue: selectedItemCode,
-      // The branch picker is a dropdown like the three on Stage 3, so it needs the same menu
-      // surface: without this its CLOSED state is a white container while its OPEN menu paints
-      // `canvasColor`. See `AppTheme.dropdownMenuSurface` for why there is no theme slot for it.
-      dropdownColor: AppTheme.dropdownMenuSurface(Theme.of(context).colorScheme),
-      decoration: const InputDecoration(labelText: 'الفرع'),
-      items: rows
-          .map((item) => DropdownMenuItem(value: item.itemCode, child: Text(item.labelAr)))
-          .toList(),
-      onChanged: onChanged,
-    );
-  }
-}
