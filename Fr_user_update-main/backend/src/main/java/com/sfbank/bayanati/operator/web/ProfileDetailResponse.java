@@ -27,7 +27,7 @@ import java.util.List;
 public record ProfileDetailResponse(
     String profileId,
     String referenceNumber,
-    String branchCode,
+    
     String accountNumber,
     String status,
     String provenance,
@@ -48,7 +48,7 @@ public record ProfileDetailResponse(
     return new ProfileDetailResponse(
         detail.profileId(),
         detail.referenceNumber(),
-        detail.branchCode(),
+        
         detail.accountNumber(),
         detail.status(),
         detail.provenance(),
