@@ -14,14 +14,12 @@
 --
 -- Touches schema app only, not audit: no R-035 SET LOCAL fru.migration_in_progress flag needed.
 -- Zero real rows exist; nothing to migrate or de-duplicate.
+
 ALTER TABLE app.profile DROP CONSTRAINT profile_one_per_account;
-
-ALTER TABLE app.profile DROP COLUMN branch_code;
-
-ALTER TABLE app.profile
-    ADD CONSTRAINT profile_one_per_account UNIQUE (account_number);
-
+ALTER TABLE app.profile ADD CONSTRAINT profile_one_per_account UNIQUE (account_number);
 
 COMMENT ON CONSTRAINT profile_one_per_account ON app.profile IS
   'One profile per account number: the database-level expression of the campaign rule "one update per account" (customer.md Stage 1a). UNIQUE (account_number) since V0061 (BL-032); V0005 declared it over (branch_code, account_number).';
 
+COMMENT ON COLUMN app.profile.branch_code IS
+  'The branch the customer selected at Stage 1a. Descriptive data, not part of the profile''s identity since V0061 (BL-032): the account number alone identifies the profile, and it is what the core-banking check keys on (OQ-024). Refreshed to the customer''s latest selection on a Stage 1b re-entry.';
