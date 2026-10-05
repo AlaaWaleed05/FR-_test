@@ -336,7 +336,7 @@ public class ContactChannelsService {
                         whatsappSelected,
                         emailPresent));
             profileRepository.insertProfile(
-                profileId, branchCode, accountNumber, now, sessionEventId);
+                profileId, accountNumber, now, sessionEventId);
             profileRepository.insertContactDetails(
                 profileId, phoneNumber, emailPresent ? emailAddress : null, now);
 
