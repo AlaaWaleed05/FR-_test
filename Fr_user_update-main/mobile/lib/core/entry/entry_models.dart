@@ -197,7 +197,7 @@ sealed class LaunchDecision {
 /// only if a `LocalDraft` row exists despite there being no `LocalProgress` (a half-typed,
 /// never-submitted 1a draft).
 class FreshStart extends LaunchDecision {
-  const FreshStart({this.draftBranchCode, this.draftAccountNumber});
+  const FreshStart({this.draftAccountNumber});
 
  
   final String? draftAccountNumber;
