@@ -222,7 +222,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
    */
   const [notice, setNotice] = useState<Notice | null>(null);
 
-  const branch = useReferenceLabelMap('branch');
+  
   const occupation = useReferenceLabelMap('occupation');
   const adminDivision = useReferenceLabelMap('admin_division');
   const country = useReferenceLabelMap('country');
@@ -231,7 +231,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
   // Fields 4 and 48 are MRZ alpha-3 codes; every other country field is alpha-2. Same list, a
   // second index over its `extra.alpha3` -- see `useAlpha3LabelMap` on why this closed BL-157.
   const alpha3 = useAlpha3LabelMap();
-  const referenceLists = [branch, occupation, adminDivision, country, incomeSource, educationLevel, alpha3];
+  const referenceLists = [occupation, adminDivision, country, incomeSource, educationLevel, alpha3];
   const referenceListsError = referenceLists.some((list) => list.error);
   const retryReferenceLists = () => referenceLists.forEach((list) => list.retry());
 
@@ -513,7 +513,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
             <Badge>
               الحساب <Num>{detail.accountNumber}</Num>
             </Badge>
-            <Badge>{resolveLabel(branch.map, detail.branchCode) ?? detail.branchCode}</Badge>
+            
             <Badge background={detail.provenance === 'manual' ? PALETTE.PURPLE : PALETTE.SUCCESS} color="#fff">
               {PROVENANCE_LABELS_AR[detail.provenance]}
             </Badge>
@@ -651,9 +651,7 @@ export default function ProfileDetailPage(): React.JSX.Element {
               <FieldRow fieldNumber={3} label="رقم الحساب البنكي">
                 {orDashNum(detail.accountNumber)}
               </FieldRow>
-              <FieldRow fieldNumber={2} label="الفرع">
-                {orDash(resolveLabel(branch.map, detail.branchCode))}
-              </FieldRow>
+              
             </FieldGrid>
           </SubSection>
 
