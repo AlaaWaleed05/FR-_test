@@ -1,0 +1,17 @@
+# S7-07: keep the build context to what the Dockerfile actually copies -- the jar.
+# target/ is NOT excluded: the jar lives there. Everything else is source the image
+# never contains, and shipping it would put the whole codebase into a layer cache.
+src/
+.mvn/
+mvnw
+mvnw.cmd
+*.md
+target/classes/
+target/test-classes/
+target/generated-sources/
+target/generated-test-sources/
+target/maven-status/
+target/surefire-reports/
+target/failsafe-reports/
+target/site/
+target/jacoco.exec

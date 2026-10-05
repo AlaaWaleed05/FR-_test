@@ -1,0 +1,16 @@
+<!-- @dsCard group="Spacing" viewport="700x150" name="Corners" subtitle="Square everywhere. The pearl is the only circle in the system." -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; }
+  .sw { display:flex; flex-direction:column; gap:6px; }
+  .chip { width:104px; height:56px; }
+  .n { font-size:11px; font-family:var(--font-label); letter-spacing:.06em; color:var(--text-muted); }
+  .v { font-size:11px; font-variant-numeric:tabular-nums; color:var(--text-subtle); }
+</style>
+<div style="display:flex; gap:14px; align-items:center;">
+  <div class="sw"><div style="width:90px; height:56px; border:1px solid var(--line-field);"></div><div class="v">--radius: 0</div></div>
+  <div class="sw"><div style="width:56px; height:56px; border-radius:50%; overflow:hidden; box-shadow:var(--ring-pearl);"><img src="../assets/sfb-logo-circle.png" style="width:100%;height:100%;object-fit:cover;display:block;"></div><div class="v">--radius-round</div></div>
+  <div style="font-size:13px; color:var(--text-muted); max-width:38ch; line-height:1.6;">No drop shadows anywhere. Depth comes from the steel glow, the pearl ring and the dune curve.</div>
+</div>

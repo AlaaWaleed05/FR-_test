@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Arabic overrides for the Uqudo SDK's own full-screen UI (R-002 / BL-071). S8-09.
+
+  WHY THIS FILE EXISTS, and why it is a supported mechanism rather than a hack:
+
+  `sdk-bundle-Uqudo-3.10.0.aar` ships no `values-<lang>` folder of any kind — its `res/` has
+  `values` and `values-night-v8` alongside the usual `drawable*`, `font`, `layout`, `navigation`,
+  `raw` and screen-width `values-sw*dp-v13` buckets, but not one language bucket. So every string
+  the customer sees on the SDK's scan and liveness screens falls back to English. R-002 recorded
+  that correctly.
+
+  R-002 also implied `setLocale('ar')` was inert, because the UI stayed English after S1-02 called
+  it. That inference was wrong, and the bytecode says so: `UqudoSDK.setLocale` writes `key_locale`
+  into the `uqudo_preferences` SharedPreferences, and the SDK's base Activity
+  `io.uqudo.sdk.C.attachBaseContext` reads it back, builds a `Locale`, calls `LocaleList.setDefault`
+  and `Configuration.setLocales`, then returns `createConfigurationContext(...)`. Every SDK activity
+  has therefore been resolving its resources under locale `ar` all along. Only the Arabic values
+  were missing. `PluginUqudoScanner`/`PluginUqudoFaceScanner` already call `setLocale('ar')` right
+  after `init()` — and that order matters, because `init()` REMOVES `key_locale`.
+
+  App-module resources win the AGP merge over a library's, so the keys below replace the AAR's under
+  locale ar. Nothing is overlaid, subclassed or reflected into.
+
+  *** THE WORDING IS PROVISIONAL. *** Drafted at S8-09, NOT yet through the product owner's
+  native-Arabic review, and NOT yet seen on a device. BL-071 stays open for both. Entries whose
+  layout is most likely to break — long copy on a 5-inch screen, embedded newlines, and bidi
+  ordering where a placeholder or a digit sits inside an Arabic sentence — carry a RISK comment so
+  the review and the device pass know where to look hardest.
+
+  RELEASE-BUILD NOTE, measured not assumed: 129 of these 134 keys carry their Arabic into the
+  release APK. The other five — `uq_confirm`, `uq_error_permission_denied`, `uq_error_retry`,
+  `uq_error_forbidden`, `uq_error_payload_too_large` — are absent from the release resource table
+  ENTIRELY, their English defaults included, because the release resource shrinker found nothing
+  referencing them. So this is not an override failing to merge and it is not a language
+  regression: there is no string of any language behind those five in a release build, and the
+  code path that would have shown them was shrunk away with them. They are kept here because they
+  are correct, cost nothing, and apply in a debug build or if the shrinker's analysis changes.
+  If any of those five messages is ever seen in ENGLISH on a device, this analysis is wrong.
+
+  Deliberately NOT overridden: `uq_api_base_url` and `uq_face_active_liveness` (both
+  translatable="false" — they are configuration, not copy); the NFC/reading, lookup/OTP, background
+  check and PDF-upload flows, none of which this journey enables; and the document descriptions of
+  countries other than Sudan.
+-->
+<!--
+  `tools:ignore="ExtraTranslation"` is load-bearing, not tidying. Every key below is defined only
+  here, because its default lives in the Uqudo AAR rather than in this module's `values/strings.xml`
+  — and lint does not count a library's defaults. `ExtraTranslation` is a FATAL lint issue, and
+  `lintVitalRelease` sits in the release assembly graph, so without this the RELEASE build fails
+  with 133 errors while the debug build passes happily. Reviewer-found at S8-09: the original proof
+  was a debug build, which never runs `lintVital`. The pilot APK is a release build.
+
+  The alternative — copying 133 English defaults into `values/strings.xml` — would fork the SDK's
+  own copy into this repo and let it drift silently at the next SDK upgrade. Suppressing the check
+  is the correct call here, not the lazy one.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
+
+    <!-- ==== Shared chrome ==== -->
+    <string name="uq_button_title_continue">متابعة</string>
+    <string name="uq_cancel">إلغاء</string>
+    <string name="uq_confirm">تأكيد</string>
+    <string name="uq_ok">حسنًا</string>
+    <string name="uq_yes">نعم</string>
+    <string name="uq_no">لا</string>
+    <string name="uq_quit">خروج</string>
+    <string name="uq_retry">إعادة المحاولة</string>
+    <string name="uq_scan">مسح</string>
+    <string name="uq_start">بدء</string>
+    <string name="uq_initiating_data">جارٍ البدء…</string>
+    <string name="uq_validating_data">جارٍ التحقق…</string>
+    <string name="uq_fetching_result">جارٍ إنهاء الجلسة…</string>
+    <string name="uq_status_title_hold_on">يرجى الانتظار، قد تستغرق العملية دقيقة واحدة</string>
+    <!-- RISK (bidi): two Latin digits either side of a hyphen inside RTL text is the classic
+         mirroring trap — check the two numbers read in the right order, not reversed. -->
+    <string name="uq_page_number">صفحة %1$d - %2$d</string>
+
+    <!-- ==== Document names ====
+         These substitute into the %1$s / %2$s of the scan strings below, so they must read
+         naturally mid-sentence. Matched to the wording Stage 8 already uses on our own screens
+         (`stage8_screen.dart` `_documentLabel`) so the customer does not meet two names for the
+         same document in one journey.
+
+         Walk comment 8 (2026-09-10) renamed the national card from «بطاقة الرقم الوطني» to
+         «البطاقة القومية» — «الرقم الوطني» is the NUMBER printed on it, not the document. This
+         string moved WITH `_documentLabel` and Stage 7's card, because the invariant above is
+         exactly what breaks otherwise: the customer reads our Stage 8 preparation screen and
+         then, seconds later, the SDK's camera screen. Caught by `@agent-reviewer`. -->
+    <string name="uq_passport_description">جواز السفر</string>
+    <string name="uq_sdn_id_description">البطاقة القومية</string>
+    <string name="uq_document_front">الأمامي</string>
+    <string name="uq_document_back">الخلفي</string>
+
+    <!-- ==== Document scan ==== -->
+    <!-- RISK (bidi): %1$s is an Arabic document name inside an Arabic sentence — safe in principle,
+         but this is the first line the customer reads at the camera. Confirm on device. -->
+    <string name="uq_scan_message">ضع الوجه %1$s للوثيقة داخل الإطار</string>
+    <string name="uq_scan_message_single_side">ضع صفحة البيانات داخل الإطار</string>
+    <string name="uq_scan_scan_info">امسح الوجه %1$s من وثيقتك</string>
+    <string name="uq_scan_wrong_document">يرجى تقديم الوجه %1$s من %2$s</string>
+    <string name="uq_scan_turn_text">اقلب الوثيقة</string>
+    <string name="uq_scan_intermediate_loading">لا تحرّك الجهاز</string>
+    <string name="uq_scan_document_move_center">ضع الوثيقة في منتصف الإطار</string>
+    <string name="uq_scan_document_move_closer">قرّب الكاميرا من الوثيقة</string>
+    <string name="uq_scan_blur_image_detected">الصورة غير واضحة. لا تحرّك الجهاز أثناء المسح وتأكد من الإضاءة الجيدة</string>
+    <string name="uq_scan_dark_image_detected">الإضاءة ضعيفة، تأكد من وجود إضاءة جيدة أثناء المسح</string>
+    <string name="uq_scan_glare_detected">تجنب انعكاس الضوء على الوثيقة</string>
+    <string name="uq_scan_finger_detected">لا تغطِّ الوثيقة بأصابعك</string>
+    <string name="uq_scan_text_visible">تأكد من وضوح جميع البيانات</string>
+    <!-- RISK (newline): the SDK's own line break is preserved; Arabic runs longer, so the second
+         line may wrap into a third on a 5-inch screen. -->
+    <string name="uq_scan_face_visible">تأكد من وضوح صورة الوجه\nوعدم وجود ما يغطيها</string>
+    <string name="uq_scan_face_detection_issue">الصورة غير واضحة. انتقل إلى مكان أفضل إضاءة</string>
+    <!-- RISK (length): long copy under the camera frame. -->
+    <string name="uq_scan_info_id">إن ظهرت انعكاسات أو وهج، امسح الوثيقة من وضع مختلف. وتأكد من نظافة عدسة الكاميرا.</string>
+    <string name="uq_scan_done_message_single_side">اكتمل المسح</string>
+    <string name="uq_scan_rescan">إعادة المسح</string>
+    <string name="uq_scan_review">مراجعة المسح</string>
+    <string name="uq_scan_continue">متابعة</string>
+    <string name="uq_scan_event_alert_btn">إعادة المحاولة</string>
+    <string name="uq_scan_error_failed">فشل المسح</string>
+    <string name="uq_scan_error_expired">تأكد من استخدام وثيقة سارية</string>
+    <!-- Reviewer-found at S8-09: reachable and initially missed. `CameraFragment` shows this as
+         the dialog body when the API returns SCAN_DOCUMENT_NOT_RECOGNIZED — a DIFFERENT key from
+         `uq_error_scan_document_not_recognized`, which is only the coded label. Markup mirrors the
+         SDK original exactly — CDATA, escaped newline sequences, <b> tags — because the fragment
+         rewrites each escaped newline to <br> before HTML-rendering it. The form is not cosmetic.
+         RISK (length + newline + bidi): a four-item numbered list in a dialog, same shape as
+         `uq_face_detection_alert_description`. Check it on the 5-inch handset. -->
+    <string name="uq_scan_error_document_identify"><![CDATA[<b>تأكد من:\n1. </b> وجود إضاءة جيدة\n<b>2.</b> نظافة عدسة الكاميرا\n<b>3.</b> خلو الوثيقة من الانعكاسات\n<b>4.</b> إزالة أي ملصقات على الوثيقة]]></string>
+    <!-- RISK (length): long, and it is an accusation — the wording matters more than most. -->
+    <string name="uq_scan_id_photo_tampering_detected">تم رصد تعديل على صورة الوثيقة. العبث بصورة الوثيقة ممنوع منعًا باتًا</string>
+    <!-- RISK (length). -->
+    <string name="uq_scan_source_detection_failed">يرجى تقديم الوثيقة الأصلية. لا تُقبل الصور المعروضة على شاشة أو المطبوعة</string>
+
+    <!-- The SDK's own intro/help screen, skipped at S8-09 by `DocumentBuilder.disableHelpPage()`
+         in `plugin_uqudo_scanner.dart`. Translated anyway: two strings is cheap insurance against
+         the flag being dropped or an SDK upgrade changing the default. If these ever appear on a
+         device, item 2 has regressed. -->
+    <string name="uq_scan_help_page_title">مسح %1$s</string>
+    <string name="uq_scan_help_page_description">ضع %1$s داخل الإطار</string>
+
+    <!-- ==== Liveness / facial verification ==== -->
+    <string name="uq_face_title">التحقق من الوجه</string>
+    <!-- RISK (newline). -->
+    <string name="uq_face_position">ضع وجهك داخل الإطار البيضاوي،\nثم ابدأ التسجيل</string>
+    <!-- RISK (newline + bidi): a numbered list where each line starts with a Latin digit and a
+         full stop. This is the single most likely place to see wrong-order lines. -->
+    <string name="uq_face_hints">إليك بعض الإرشادات:\n1. ضع وجهك داخل الإطار البيضاوي\n2. اتبع الشكل الأزرق\n3. حرّك رأسك لا الهاتف</string>
+    <string name="uq_face_avoid_condition">تجنَّب الحالات التالية:</string>
+    <string name="uq_face_perfect">ممتاز!</string>
+    <string name="uq_face_too_close">قريب جدًا!</string>
+    <string name="uq_face_too_far">بعيد جدًا!</string>
+    <string name="uq_face_too_dark">مظلم جدًا!</string>
+    <string name="uq_face_too_light">ساطع جدًا!</string>
+    <string name="uq_face_try_again">إعادة المحاولة</string>
+    <string name="uq_face_retry_message">أُلغيت الجلسة أو انتهت مهلتها. هل تريد إعادة المحاولة؟</string>
+    <string name="uq_face_detection_alert_title">الوجه غير واضح</string>
+    <!-- RISK (length + newline + bidi): the longest string in the file, rendered as HTML in a
+         dialog on the smallest screen. Bold Latin digits inside RTL markup. Look here first. -->
+    <string name="uq_face_detection_alert_description"><![CDATA[إليك بعض الإرشادات:<br/><b>1.</b> ضع وجهك داخل الإطار البيضاوي وانظر مباشرة إلى الكاميرا<br/><b>2.</b> أزل كل ما يغطي وجهك، مثل الكمامة<br/><b>3.</b> اخلع النظارة الشمسية أو النظارة ذات العدسات الداكنة<br/><b>4.</b> تأكد من أن المكان ليس شديد الظلمة ولا شديد الإضاءة<br/><b>5.</b> تأكد من نظافة عدسة الكاميرا الأمامية]]></string>
+    <string name="uq_face_dialog_button_continue">متابعة</string>
+    <string name="uq_face_dialog_do_not_move_phone">لا تحرّك الهاتف</string>
+    <string name="uq_face_dialog_do_not_move_phone_title">لا تحرّك الهاتف</string>
+    <string name="uq_face_dialog_nod_slightly">أومئ برأسك قليلًا</string>
+    <string name="uq_face_dialog_face_not_match">وجهك غير مطابق</string>
+    <string name="uq_face_dialog_title_missing_permission">الإذن مطلوب</string>
+    <string name="uq_face_dialog_message_missing_camera_permission">يتطلب التعرف على الوجه السماح باستخدام الكاميرا.</string>
+    <string name="uq_face_facial_recognition_init">جارٍ التهيئة…</string>
+    <string name="uq_face_facial_recognition_find_face">جارٍ اكتشاف الوجه</string>
+    <string name="uq_face_facial_recognition_face_detected">من فضلك لا تتحرك</string>
+    <string name="uq_face_facial_recognition_hold_position">حافظ على هذا الوضع!</string>
+    <string name="uq_face_facial_recognition_look_straight">انظر مباشرة إلى الكاميرا</string>
+    <string name="uq_face_facial_recognition_no_look">انظر مباشرة إلى الكاميرا</string>
+    <string name="uq_face_facial_recognition_move">أومئ برأسك</string>
+    <string name="uq_face_facial_recognition_move_center">ضع وجهك في منتصف الإطار البيضاوي</string>
+    <string name="uq_face_facial_recognition_not_centered">ضع وجهك في منتصف الإطار البيضاوي</string>
+    <string name="uq_face_facial_recognition_move_closer">اقترب من الإطار البيضاوي</string>
+    <string name="uq_face_facial_recognition_move_further">ابتعد عن الإطار البيضاوي</string>
+    <string name="uq_face_facial_recognition_face_too_close">ابتعد عن الإطار البيضاوي</string>
+    <string name="uq_face_facial_recognition_face_too_far">اقترب من الإطار البيضاوي</string>
+    <!-- RISK (bidi): "your left" / "your right" must not mirror. In an RTL layout the customer's
+         left is still the customer's left — confirm the instruction matches the on-screen avatar. -->
+    <string name="uq_face_facial_recognition_face_turn_left">أدر وجهك قليلًا نحو اليسار</string>
+    <string name="uq_face_facial_recognition_face_turn_right">أدر وجهك قليلًا نحو اليمين</string>
+    <string name="uq_face_facial_recognition_face_tilt_left">أمِل وجهك نحو اليسار</string>
+    <string name="uq_face_facial_recognition_face_tilt_right">أمِل وجهك نحو اليمين</string>
+    <string name="uq_face_facial_recognition_face_too_light">غيّر الإضاءة لتجنب انعكاس الضوء القوي على وجهك</string>
+    <string name="uq_face_facial_recognition_face_eyes_too_dark">غيّر الإضاءة لتجنب ظهور الظل على وجهك</string>
+    <string name="uq_face_facial_recognition_background_too_dark">تأكد من أن المكان ليس شديد الظلمة</string>
+    <string name="uq_face_facial_recognition_face_bad_quality">تأكد من الإضاءة الجيدة للحصول على صورة واضحة</string>
+    <string name="uq_face_facial_recognition_face_bad_quality_blurred">تأكد من الإضاءة الجيدة للحصول على صورة واضحة</string>
+    <string name="uq_face_facial_recognition_face_bad_quality_noise">تأكد من الإضاءة الجيدة للحصول على صورة واضحة</string>
+    <string name="uq_face_facial_recognition_face_bad_quality_hazed">تأكد من الإضاءة الجيدة ومن نظافة عدسة الكاميرا الأمامية</string>
+    <string name="uq_face_facial_recognition_face_no_eyes_detected">أزل كل ما يغطي عينيك، مثل النظارة الشمسية</string>
+    <string name="uq_face_facial_recognition_face_no_mouth_detected">أزل كل ما يغطي وجهك، مثل الكمامة</string>
+    <string name="uq_face_facial_recognition_too_many_faces_found">تم رصد أكثر من وجه</string>
+    <string name="uq_face_facial_recognition_warning_face_detection">لم يتم رصد أي وجه</string>
+    <string name="uq_face_facial_recognition_warning_motion_detection">لم تُرصد أي حركة</string>
+    <string name="uq_face_facial_recognition_motion_error">لا تحرّك الجهاز</string>
+    <string name="uq_face_facial_recognition_event_alert_btn">إعادة المحاولة</string>
+
+    <!-- ==== Errors ==== -->
+    <string name="uq_error_camera_permission_denied">تنبيه</string>
+    <!-- RISK (length): the longest dialog body in the scan flow. -->
+    <string name="uq_error_camera_permission_denied_description">سبق أن رفضت الإذن باستخدام الكاميرا، وهو إذن ضروري لاستخدام هذا التطبيق. بعد الضغط على الزر أدناه ستنتقل إلى إعدادات التطبيق حيث يمكنك السماح باستخدام الكاميرا. يرجى العلم بأن التطبيق قد يُعاد تشغيله بعد تغيير هذا الإعداد.</string>
+    <string name="uq_error_permission_denied">تم رفض طلب الإذن</string>
+    <string name="uq_error_quit_message">هل أنت متأكد من رغبتك في إنهاء العملية؟</string>
+    <string name="uq_error_network_unavailable">لا يوجد اتصال بالإنترنت، تأكد من وجود اتصال صالح قبل المتابعة</string>
+    <string name="uq_error_retry">تأكد من اتصال الجهاز بالإنترنت ثم أعد المحاولة</string>
+    <string name="uq_error_request_timeout">انتهت مهلة الطلب، تحقق من اتصالك بالإنترنت ثم أعد المحاولة</string>
+    <string name="uq_error_gateway_timeout">انتهت مهلة الطلب، يرجى المحاولة مرة أخرى</string>
+    <string name="uq_error_service_unavailable">الخدمة غير متاحة حاليًا، يرجى المحاولة لاحقًا</string>
+    <string name="uq_error_internal_error">حدث خطأ داخلي في الخدمة</string>
+    <string name="uq_error_status_internal_error">حدث خطأ داخلي في الخدمة</string>
+    <string name="uq_error_something_wrong">حدث خطأ ما، يرجى المحاولة لاحقًا</string>
+    <string name="uq_error_status_unexpected_error">حدث خطأ ما، يرجى المحاولة مرة أخرى</string>
+    <string name="uq_error_forbidden">الخدمة المطلوبة غير متاحة</string>
+    <string name="uq_error_status_forbidden">الخدمة المطلوبة غير متاحة</string>
+    <string name="uq_error_invalid_input">بيانات مطلوبة ناقصة أو بصيغة غير صحيحة</string>
+    <string name="uq_error_payload_too_large">حجم البيانات المرسلة كبير جدًا</string>
+    <string name="uq_error_status_payload_too_large">حجم البيانات المرسلة كبير جدًا</string>
+    <!-- RISK (length). -->
+    <string name="uq_error_too_many_requests">النظام مشغول مؤقتًا، ولا يمكن معالجة طلبك الآن. يرجى المحاولة بعد قليل، وإن استمرت المشكلة فحاول لاحقًا.</string>
+    <string name="uq_error_session_expired_or_not_found">انتهت صلاحية الجلسة أو لم يتم العثور عليها</string>
+    <string name="uq_error_status_session_expired_or_not_found">انتهت صلاحية الجلسة أو لم يتم العثور عليها</string>
+    <string name="uq_error_status_user_cancelled">ألغى المستخدم العملية</string>
+    <string name="uq_error_status_session_invalidated_camera_not_available">الكاميرا غير متاحة</string>
+    <string name="uq_error_status_session_invalidated_camera_not_permission_not_granted">لم يتم منح الإذن باستخدام الكاميرا</string>
+    <!-- RISK (bidi): a Latin digit inside an Arabic sentence. -->
+    <string name="uq_error_status_face_max_failed_attempt_reached">أُلغيت الجلسة بعد %1$d محاولات فاشلة للتعرف على الوجه</string>
+    <string name="uq_error_face_liveness_failed">فشل التحقق من أن الوجه حي</string>
+    <string name="uq_error_face_liveness_retry">إعادة محاولة التحقق من أن الوجه حي</string>
+    <string name="uq_error_face_no_match">الوجه لا يطابق الوثائق المقدَّمة</string>
+    <string name="uq_error_auth_token_missing">رمز المصادقة غير متوفر</string>
+    <string name="uq_error_document_missing">يلزم إدراج وثيقة واحدة على الأقل</string>
+    <string name="uq_error_enrollment_document_not_supported">هذه الوثيقة غير مدعومة في عملية التسجيل</string>
+    <string name="uq_error_enrollment_facial_recognition_not_supported">التعرف على الوجه غير مدعوم للوثيقة المختارة</string>
+    <string name="uq_error_enrollment_session_id_missing">يلزم معرّف جلسة صالح لإجراء جلسة التحقق من الوجه</string>
+    <string name="uq_error_scan_document_expired">الوثيقة منتهية الصلاحية</string>
+    <string name="uq_error_scan_document_not_recognized">تعذر التعرف على نوع الوثيقة</string>
+    <string name="uq_error_scan_document_front_back_mismatch">الوجه الأمامي والخلفي لا ينتميان إلى الوثيقة نفسها</string>
+
+</resources>

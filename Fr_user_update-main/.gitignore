@@ -1,0 +1,36 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
+# AWS provisioning state (resource IDs, account-specific)
+infra/aws/*-ids.env.bak
+infra/aws/*-ids.env
+infra/aws/.taskdef.json
+infra/aws/.s711-probe.json
+infra/aws/.spa-fallback.js
+infra/aws/.vpc-origin.json
+infra/aws/.distribution.json
+infra/aws/backoffice-ids.env
+
+# Incident forensics captured from a live deployment. Untracked BY INSTRUCTION (S8-16: the
+# product owner fenced the device-testing investigation out of the commit), and gitignored so
+# that instruction survives a session-end `git add -A` rather than depending on someone
+# remembering it. Same reason infra/aws/*-ids.env is fenced: no secrets, but AWS account ids,
+# subnet/ENI ids and private IPs are account-specific detail with no business in the repository.
+docs/incidents/
+~$*.docx

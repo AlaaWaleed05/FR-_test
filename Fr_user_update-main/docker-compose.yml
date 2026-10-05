@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: fru_postgres
+    environment:
+      # Container bootstrap superuser only. Never used by Flyway or the application —
+      # see db/init/01-create-migrator.sh, which creates the non-superuser fru_migrator
+      # role that actually owns the database, and docs/components/persistence.md.
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_BOOTSTRAP_USER}
+      POSTGRES_PASSWORD: ${DB_BOOTSTRAP_PASSWORD}
+      FRU_MIGRATOR_PASSWORD: ${DB_MIGRATOR_PASSWORD}
+      # ar-x-icu collation depends on ICU; locale provider can only be set at database
+      # creation time, so it is fixed here rather than deferred to the ref schema work.
+      POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=ar"
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      # PostgreSQL 18+ images use pg_ctlcluster-style versioned subdirectories under
+      # /var/lib/postgresql itself — do not mount the volume at .../data (that layout
+      # is for pre-18 images and 18 refuses to start against it).
+      - fru_postgres_data:/var/lib/postgresql
+      - ./db/init/01-create-migrator.sh:/docker-entrypoint-initdb.d/01-create-migrator.sh:ro
+
+volumes:
+  fru_postgres_data:

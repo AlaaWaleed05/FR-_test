@@ -1,0 +1,9 @@
+/* Bayanati webfonts.
+   IBM Plex Sans Arabic is the interface family — its Arabic was designed as a companion to
+   IBM Plex Sans Latin, so both scripts share proportions and weight. Latin labels use
+   IBM Plex Sans Condensed from the SAME superfamily, so the two scripts match.
+   Amiri (Naskh serif) is the splash display face ONLY, and only ever sets Arabic.
+
+   SUBSTITUTION NOTE: the Flutter app bundles IBM Plex Sans Arabic as a local asset.
+   No binaries were provided here, so all families load from Google Fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap");

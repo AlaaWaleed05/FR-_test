@@ -1,0 +1,36 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Capture" subtitle="Scan target, liveness oval, document cards, signature" -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .lbl { font-family:var(--font-label); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:7px; }
+  .grid { display:grid; gap:18px; }
+  
+</style>
+<div id="root"></div>
+<script type="text/babel">
+const NS = window.SFB_Bayanati || window.SFBBayanati || window.Bayanati || window.BayanatiDesignSystem ||
+    Object.values(window).find(v => v && typeof v === 'object' && v.BrandBar && v.Button) || {};
+
+const { CaptureFrame, DocumentCard, SignaturePad } = NS;
+function Card() {
+  return (
+    <div dir="rtl" style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:14 }}>
+      <div><div className="lbl">SCAN TARGET</div><CaptureFrame shape="card">ضع البطاقة داخل الإطار</CaptureFrame></div>
+      <div><div className="lbl">LIVENESS</div><CaptureFrame shape="oval" ratio={1.3} hint="انظر إلى الكاميرا مباشرة" /></div>
+      <div><div className="lbl">DOCUMENT CARDS</div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+          <DocumentCard kind="id" label="الرقم الوطني" selected />
+          <DocumentCard kind="passport" label="جواز السفر" />
+        </div>
+      </div>
+      <div><div className="lbl">SIGNATURE</div><SignaturePad /></div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script>

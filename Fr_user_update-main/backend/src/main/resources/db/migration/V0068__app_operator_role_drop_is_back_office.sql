@@ -1,0 +1,41 @@
+-- `app.operator_role.is_back_office` is DROPPED (AD-013, product-owner decision 2026-09-13,
+-- BL-139). AD-013 made the back-office role ladder a hierarchy with `admin` on top: admin holds
+-- every operator power plus sole authority to create and manage back-office users. The column
+-- encoded the model AD-013 reversed -- "true for the two roles that may reach /api/v1/operator/**;
+-- false for 'admin'" -- and under the new ruling it would be true for all three rows, which is to
+-- say it would distinguish nothing.
+--
+-- WHY DROPPED RATHER THAN FLIPPED TO true FOR 'admin'.
+-- Product-owner decision taken at the session that built BL-139, and taken explicitly because
+-- AD-013 does NOT rule on this column. AD-013's row names V0057 only inside a pointer to the
+-- wayfinder ticket; the ticket alone says the flag "becomes true for admin". Rather than settle
+-- that in passing -- which CLAUDE.md forbids -- the question was put to the product owner, who
+-- ruled the column out of existence instead. A boolean identical on every row is not data.
+--
+-- NOTHING READS IT, AND THAT IS THE POINT.
+-- Verified across all three tiers before dropping: no Java, no SQL, no TypeScript, no Dart and no
+-- test references `is_back_office`. `JdbcOperatorUserRepository` never joins `app.operator_role`
+-- at all. The table's only live use is the foreign key on `code` (V0057:40) and its GRANT SELECT
+-- (V0057:65), neither of which touches this column. So this migration cannot change behaviour:
+-- there is no behaviour attached to it to change.
+--
+-- THE REAL HAZARD IT LEAVES BEHIND, which is why removal beats retention.
+-- V0057:16-17's comment on the column asserted "false for 'admin', which manages accounts and
+-- reaches no operator endpoint (docs/journeys/operator.md, AD-002e)". That sentence was true when
+-- written and became false on 2026-09-13 while nothing forced anyone to notice -- a column no code
+-- reads is a column no test can catch drifting. This project has now been bitten by a frozen
+-- comment four times (BL-101, BL-065, BL-021, BL-105). Dropping the column retires the comment
+-- with it.
+--
+-- V0057 IS SUPERSEDED, NOT EDITED. Same reasoning as V0066 and V0067: V0057 has been applied to
+-- every environment and Flyway's validateOnMigrate defaults to true, so editing its bytes changes
+-- its checksum and breaks migration on every already-migrated database -- a break no gate would
+-- catch, because Testcontainers starts from an empty database and re-applies the edited file,
+-- matching its own checksum every time. Read V0057:14-24 as what was true between S4-05 and
+-- 2026-09-13.
+ALTER TABLE app.operator_role DROP COLUMN is_back_office;
+
+-- Grants are table-level (V0057:65) and unaffected by a column drop. The `role text NOT NULL
+-- REFERENCES app.operator_role(code)` foreign key on app.operator_user (V0057:40) references
+-- `code`, not this column, so it is untouched and the three seeded rows remain exactly as they
+-- were. Nothing downstream depends on this migration having run.

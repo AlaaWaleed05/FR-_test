@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Stub aws CLI for infra/aws/test/run-gate-tests.sh. No network, no credentials, no real
+# secret. The password below is a fixed literal used only inside this harness -- it is not
+# a credential for anything and nothing it produces reaches an account.
+ARGS="$*"
+
+case "$ARGS" in
+  *get-secret-value*)
+    echo '{"username":"fru_master","password":"stub-not-a-real-password"}' ;;
+
+  *get-random-password*)
+    case "${STUB_PWGEN:-ok}" in
+      ok)    echo "stubGeneratedPasswordAAAAAAAAAAAAAAAAAAAA" ;;
+      empty) echo "" ;;
+    esac ;;
+
+  *describe-secret*)
+    # exit 0 = the secret already exists, so 04-db-gates.sh takes the rotation path
+    [ "${STUB_SECRET_EXISTS:-no}" = yes ] || exit 255
+    echo '{"Name":"fru/staging/db/migrator"}' ;;
+
+  *put-secret-value*)
+    [ "${STUB_PUT:-ok}" = ok ] || { echo "An error occurred (AccessDeniedException)" >&2; exit 255; }
+    ;;
+
+  *create-secret*)
+    [ "${STUB_CREATE:-ok}" = ok ] || { echo "An error occurred (AccessDeniedException)" >&2; exit 255; }
+    ;;
+esac
+exit 0

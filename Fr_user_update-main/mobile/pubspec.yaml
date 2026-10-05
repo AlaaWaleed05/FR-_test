@@ -1,0 +1,158 @@
+name: mobile
+description: "Customer data-update app for the Sudanese French Bank."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.7
+
+# S5-03: encrypt session.sqlite (R-025). SQLite3 Multiple Ciphers embeds its own crypto rather
+# than linking OpenSSL (verified against the installed sqlite3 3.5.2 package: no podspec/ios/
+# darwin dir for any `source:` flavor, and doc/hook.md attributes the OpenSSL dependency to the
+# sqlcipher flavor only, on Windows/Linux/Android, never sqlite3mc) — see
+# docs/components/persistence.md and docs/sessions/2026-09-01-s5-03-local-encryption.md.
+# This selects the binary for the whole `sqlite3` package (no per-database selector exists);
+# SQLite3 Multiple Ciphers only encrypts a database that actually receives `PRAGMA key`, so
+# reference.db — which never sets one, per AD-005 §8's "no PII" call — stays a plain, unencrypted
+# SQLite file despite sharing the binary.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
+  drift: 2.34.3
+  sqlite3: 3.5.2
+  dio: 5.11.0
+  flutter_riverpod: 2.6.1
+  go_router: 18.0.0
+  crypto: 3.0.7
+  path_provider: 2.1.6
+  path: 1.9.1
+  flutter_secure_storage: 11.0.0
+  image_picker: 1.2.3
+  file_picker: 12.1.3
+  image: 4.9.2
+  # S1-02: Uqudo eKYC SDK. Exact pin (PROJECT_PLAN: the pin must be explicit and S1-02 verifies
+  # signatures against whatever is pinned). Android + iOS plugin; iOS podspec pins UqudoSDK and
+  # OpenSSL-Universal 3.3.3001 exactly (R-003) -- recorded at addition time in the S1-02 report.
+  uqudosdk_flutter: 3.10.0
+  # S5-08 (AD-006): Stage 11's signature draw pad. Exact pin, matching every other dependency
+  # here. iOS support verified BY INSPECTION at addition time, not by a build (CLAUDE.md's
+  # per-package rule; the same artifact-inspection standard `uqudosdk_flutter` was held to at
+  # S1-02, and iOS is not compiled on this machine). `signature` 6.4.0 pulls five transitive
+  # packages AD-006 did not name -- flutter_svg 2.3.0, path_parsing 1.1.0, vector_graphics
+  # 1.2.3, vector_graphics_codec 1.1.13, vector_graphics_compiler 1.3.0 -- and ALL SIX are pure
+  # Dart: none declares `flutter: plugin:`, none ships an ios/android/darwin/macos directory,
+  # and the only .podspec/.swift/.kt/.gradle files anywhere in them live under `example/` demo
+  # apps that are never compiled into a consuming app. So AD-006's finding holds as written --
+  # no CocoaPods surface beyond `image_picker`/`file_picker`, and nothing here touches
+  # R-025/OpenSSL-Universal 3.3.3001.
+  #
+  # This does NOT mean Stage 11 runs on iOS. BL-052 stands: there is no NSCameraUsageDescription,
+  # no NSPhotoLibraryUsageDescription and no Podfile in this repo, so stages 8, 10 and 11 cannot
+  # run on iOS at all today regardless of this package.
+  signature: 6.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^6.0.0
+  drift_dev: 2.34.5
+  build_runner: 2.16.0
+  path_provider_platform_interface: 2.1.3
+  plugin_platform_interface: 2.1.8
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # Never hand-edit any of these -- edit the generating script and re-run it (CLAUDE.md).
+  #
+  # sfb-pearl.png and sfb-wordmark-navy.png are generated by
+  # mobile/tool/generate_design3_assets.py from the Design_3/ handoff (AD-012). The pearl is
+  # downsized from the supplied 1318 px / 1.1 MB original, which is roughly ten times the
+  # largest size any surface here draws it at. The wordmark is a raster extraction from a JPEG
+  # screenshot and carries edge artifacts at size; the handoff asks for the bank's vector
+  # originals before release and that ask is still open (AD-012).
+  # ONLY what a widget actually draws. `@agent-reviewer` caught two faults here at once: the
+  # splash's own wordmark was MISSING (so `LaunchScreen` threw "Unable to load asset" at runtime
+  # while 604 tests passed, because a widget test inspects the tree and never the bundle), and
+  # two assets were declared that nothing reads. sfb-wordmark-white.png was for a banner wordmark
+  # that AD-012's own adaptation drops; sfb-emblem.png was the OLD splash lockup, and it is now
+  # gone from the repository entirely -- AD-012's fork 5 moved the launcher icon to the pearl, so
+  # the emblem had no consumer left on either side.
+  assets:
+    - assets/brand/sfb-pearl.png
+    - assets/brand/sfb-wordmark-navy.png
+
+  # D3.1: IBM Plex Sans Arabic, Regular 400 + SemiBold 600 only. Its MATCHED LATIN is the
+  # deciding factor -- nearly every screen sets Arabic labels beside Latin digits, `FRU-`
+  # reference numbers and scanned names, and an unmatched pair produces a visible family jump
+  # mid-line. Bundled (not fetched at runtime) so the app renders identically offline.
+  #
+  # These two files are GENERATED by mobile/tool/fetch_and_subset_fonts.py, which subsets them
+  # BY UNICODE RANGE and never by the characters this repo's own strings use -- customer names
+  # arrive from the Uqudo scan and the Civil Registry and can contain characters no literal
+  # here contains, so a string-scanned subset would render a customer's own name as boxes
+  # (D3.3). Licences: SIL OFL 1.1, assets/fonts/OFL-<family>.txt.
+  #
+  # AMIRI 400 IS DISPLAY ONLY -- AD-012 fork 2, product-owner ruling 2026-09-12. The Design_3
+  # handoff sets the splash name in Amiri; it is a Naskh serif with NO matched Latin, so it
+  # carries the splash lockup and screen headings and nothing else. `AppTheme` wires it to
+  # `displayLarge`/`headlineMedium` only, and `fontFamily` stays IBMPlexSansArabic, so every
+  # label, field and number keeps the matched pair. Do not promote it to the body face without
+  # re-opening that ruling.
+  fonts:
+    - family: IBMPlexSansArabic
+      fonts:
+        - asset: assets/fonts/IBMPlexSansArabic-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexSansArabic-SemiBold.ttf
+          weight: 600
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+          weight: 400

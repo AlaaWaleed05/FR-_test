@@ -1,0 +1,94 @@
+<!-- @dsCard group="Bayanati app" viewport="880x700" -->
+<!-- @startingPoint section="Bayanati app" subtitle="One-time account update journey, click-through" viewport="880x700" -->
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>بياناتي — UI kit</title>
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin:0; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .wrap { display:flex; gap:28px; padding:28px; align-items:flex-start; }
+  .frame { border:1px solid rgba(11,28,71,.22); flex:0 0 auto; }
+  .side { display:flex; flex-direction:column; gap:14px; max-width:340px; }
+  .k { font-family:var(--font-label); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-accent); }
+  .steps { display:flex; flex-direction:column; gap:2px; }
+  .step { text-align:start; background:transparent; border:none; font-family:inherit; font-size:15px; color:var(--text-body);
+          padding:9px 12px; cursor:pointer; border-inline-start:2px solid transparent; }
+  .step:hover { background:rgba(89,128,166,.12); }
+  .step[aria-current="true"] { border-inline-start-color:var(--navy-800); font-weight:600; background:rgba(89,128,166,.08); }
+  .note { font-size:13px; line-height:1.65; color:var(--text-muted); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const NS = window.SFB_Bayanati || window.SFBBayanati || window.Bayanati || window.BayanatiDesignSystem ||
+  Object.values(window).find(v => v && typeof v === 'object' && v.LaunchScreen && v.ConfirmationScreen) || {};
+const { LaunchScreen, AccountEntryScreen, ContactChannelsScreen, IdentityTypeScreen,
+        RegistryReviewScreen, SubmitScreen, ConfirmationScreen } = NS;
+
+const FLOW = [
+  ['البداية', (go) => <LaunchScreen />],
+  ['بيانات الحساب', (go) => <AccountEntryScreen onNext={() => go(2)} />],
+  ['الحساب غير موجود', (go) => <AccountEntryScreen error="تعذر العثور على هذا الحساب. يرجى التحقق من الرقم." offline />],
+  ['قنوات الاتصال', (go) => <ContactChannelsScreen onNext={() => go(4)} onBack={() => go(1)} />],
+  ['نوع وثيقة الهوية', (go) => <IdentityTypeScreen onNext={() => go(5)} onBack={() => go(3)} />],
+  ['مراجعة نتائج المسح', (go) => <RegistryReviewScreen onNext={() => go(6)} />],
+  ['إرسال الطلب', (go) => <SubmitScreen onSubmit={() => go(7)} />],
+  ['تم الإرسال', (go) => <ConfirmationScreen onFinish={() => go(0)} />],
+];
+
+function Missing() {
+  return (
+    <div className="wrap">
+      <div className="side" style={{ maxWidth: '52ch' }}>
+        <div className="k">Design system bundle not built yet</div>
+        <div className="note">
+          This kit mounts components from <code>_ds_bundle.js</code>, which the design-system compiler
+          generates. Set this file's type to <strong>Design System</strong> in the Share menu — the bundle
+          is built on registration and this page will render the journey.
+        </div>
+        <div className="note">
+          Everything else works without it: the token sheet, the foundation cards in <code>guidelines/</code>,
+          and the full 22-screen sets at the project root.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [i, setI] = React.useState(1);
+  if (!LaunchScreen) return <Missing />;
+  const go = (n) => setI(n);
+  return (
+    <div className="wrap">
+      <div className="frame">{FLOW[i][1](go)}</div>
+      <div className="side">
+        <div className="k">Bayanati · one-time account update</div>
+        <div className="note">
+          Arabic-first, RTL, thirteen steps, completed once per account. Tap through the flow, or jump to any screen.
+          Copy is verbatim from the Flutter app; names, numbers and the reference are sample data.
+        </div>
+        <div className="steps">
+          {FLOW.map(([label], n) => (
+            <button key={label} className="step" aria-current={n === i} onClick={() => setI(n)}>{label}</button>
+          ))}
+        </div>
+        <div className="note">
+          Not shown here: stages 3–7 data entry, the Uqudo scan brief, liveness, signature, and the terminal states —
+          all twenty-two are drawn in <strong>Bayanati Screens.dc.html</strong> at the project root.
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

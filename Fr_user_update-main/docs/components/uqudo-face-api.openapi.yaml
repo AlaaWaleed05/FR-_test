@@ -1,0 +1,303 @@
+openapi: 3.0.1
+info:
+  title: Uqudo ID API
+  contact:
+    email: hello@uqu.do
+  version: "1.0"
+servers:
+- url: https://id.uqudo.io
+paths:
+  /api/v1/face/one-to-n/search:
+    post:
+      tags:
+      - face-api
+      summary: Face Search API
+      description: "The 1:N Search API enables customers to check whether an id photo\
+        \ exists within the customer tenant. Furthermore, it provides the option to\
+        \ add the id photo if it is not found."
+      operationId: faceSearch
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceSearchRequest"
+        required: true
+      responses:
+        "200":
+          description: Face match result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceSearchResponse"
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "413":
+          description: "Payload Too Large: The uploaded image exceeds the max file\
+            \ size allowed of 5 MB"
+        "415":
+          description: "Unsupported Media Type: Only JPEG and PNG are supported"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+  /api/v1/face/one-to-n/insert:
+    post:
+      tags:
+      - face-api
+      summary: Face Search Insert API
+      description: The 1:N Search Insert API enables customers to directly include
+        the selfie in the database.
+      operationId: faceSearchInsert
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceSearchInsertRequest"
+        required: true
+      responses:
+        "200":
+          description: Face match result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceSearchInsertResponse"
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "413":
+          description: "Payload Too Large: The uploaded image exceeds the max file\
+            \ size allowed of 5 MB"
+        "415":
+          description: "Unsupported Media Type: Only JPEG and PNG are supported"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+  /api/v1/face/match:
+    post:
+      tags:
+      - face-api
+      description: Face match API
+      operationId: faceMatch
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceMatchRequest"
+        required: true
+      responses:
+        "200":
+          description: Face match result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceMatchResponse"
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "413":
+          description: "Payload Too Large: The uploaded image exceeds the max file\
+            \ size allowed of 5 MB"
+        "415":
+          description: "Unsupported Media Type: Only JPEG and PNG are supported"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+  /api/v1/face:
+    post:
+      tags:
+      - face-api
+      description: Face session API
+      operationId: initSession
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - idPhoto
+              type: object
+              properties:
+                idPhoto:
+                  required:
+                  - idPhoto
+                  type: string
+                  description: Id photo of the user
+                  format: binary
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceSessionInitRequest"
+        required: true
+      responses:
+        "201":
+          description: Face init session result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceSessionInitResponse"
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "413":
+          description: "Payload Too Large: The uploaded image exceeds the max file\
+            \ size allowed of 5 MB"
+        "415":
+          description: "Unsupported Media Type: Only JPEG and PNG are supported"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+  /api/v1/face/one-to-n/search/{oneToNVerificationId}:
+    delete:
+      tags:
+      - face-api
+      summary: Face Search Delete API
+      description: "The 1:N Search Delete API allows customers to delete the original\
+        \ selfie image from our storage. The indexed face features will persist in\
+        \ the database, retaining the same oneToNVerificationId. However, it may be\
+        \ subject to removal at a later stage, particularly if there's a necessity\
+        \ to re-index all selfies due to model updates."
+      operationId: faceSearchDelete
+      parameters:
+      - name: oneToNVerificationId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "404":
+          description: "Not Found: oneToNVerificationId not found"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+components:
+  schemas:
+    FaceSearchRequest:
+      required:
+      - idPhoto
+      type: object
+      properties:
+        idPhoto:
+          minLength: 1
+          type: string
+          description: Base64 encoded binary of the image. Only JPG and PNG are supported.
+            Max file size allowed of 5 MB
+          format: byte
+        insert:
+          type: boolean
+          description: If true will insert the idPhoto if not found. Default to false
+          default: false
+    FaceSearchResponse:
+      type: object
+      properties:
+        oneToNVerificationId:
+          type: string
+        oneToNVerificationMatch:
+          type: boolean
+    FaceSearchInsertRequest:
+      required:
+      - idPhoto
+      type: object
+      properties:
+        idPhoto:
+          minLength: 1
+          type: string
+          description: Base64 encoded binary of the image. Only JPG and PNG are supported.
+            Max file size allowed of 5 MB
+          format: byte
+    FaceSearchInsertResponse:
+      type: object
+      properties:
+        oneToNVerificationId:
+          type: string
+    FaceMatchRequest:
+      required:
+      - sourceImage
+      - targetImage
+      type: object
+      properties:
+        sourceImage:
+          minLength: 1
+          type: string
+          format: byte
+        targetImage:
+          minLength: 1
+          type: string
+          format: byte
+        minimumMatchLevel:
+          type: integer
+          description: "Minimum match level 1 -> 5, the default value is 3"
+          format: int32
+    FaceMatchResponse:
+      type: object
+      properties:
+        match:
+          type: boolean
+        matchLevel:
+          type: integer
+          format: int32
+    FaceSessionInitResponse:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          description: Session id needed to trigger the "Face Session Flow" in the
+            uqudo SDK. It's valid for 10 minutes
+    FaceSessionInitRequest:
+      required:
+      - idPhoto
+      type: object
+      properties:
+        idPhoto:
+          minLength: 1
+          type: string
+          format: byte

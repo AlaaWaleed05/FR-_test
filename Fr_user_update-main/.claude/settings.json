@@ -1,0 +1,99 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(docker info *)",
+      "Bash(\"/c/Program Files/Docker/Docker/Docker Desktop.exe\")",
+      "Bash(disown)",
+      "Bash(docker run *)",
+      "Bash(docker desktop *)",
+      "PowerShell(Get-PSDrive -PSProvider FileSystem | Select-Object Name, @{N='UsedGB';E={[math]::Round\\($_.Used/1GB,2\\)}}, @{N='FreeGB';E={[math]::Round\\($_.Free/1GB,2\\)}})",
+      "Bash(wsl --list --verbose)",
+      "Bash(wsl --shutdown)",
+      "Bash(echo \"shutdown exit: $?\")",
+      "Bash(taskkill //F //IM \"Docker Desktop.exe\")",
+      "Bash(taskkill //F //IM \"com.docker.backend.exe\")",
+      "Bash(taskkill //F //IM \"com.docker.build.exe\")",
+      "Bash(docker image *)",
+      "Bash(docker version *)",
+      "Bash(docker rm *)",
+      "PowerShell(Get-PSDrive -PSProvider FileSystem | Select-Object Name, @{N='FreeGB';E={[math]::Round\\($_.Free/1GB,2\\)}})",
+      "Bash(docker rmi *)",
+      "Bash(docker pull *)",
+      "Bash(wsl --terminate docker-desktop)",
+      "Bash(echo \"terminate exit: $?\")",
+      "Bash(wsl --unregister docker-desktop)",
+      "Bash(echo \"unregister exit: $?\")",
+      "Bash(docker system *)",
+      "PowerShell(Get-ChildItem -Path \"$env:LOCALAPPDATA\\\\Docker\\\\wsl\" -Recurse -File -ErrorAction SilentlyContinue | Select-Object FullName, @{N='SizeMB';E={[math]::Round\\($_.Length/1MB,1\\)}})",
+      "Bash(echo \"stop exit: $?\")",
+      "Bash(taskkill //F //IM \"com.docker.service\")",
+      "Bash(tasklist //FI \"IMAGENAME eq Docker Desktop.exe\")",
+      "Bash(tasklist //FI \"IMAGENAME eq com.docker.backend.exe\")",
+      "Bash(docker volume *)",
+      "Bash(docker exec *)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\" ./mvnw test)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\" ./mvnw verify)",
+      "Bash(\"C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\\\\fvm.bat\" flutter *)",
+      "Bash(\"C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\\\\fvm.bat\" dart *)",
+      "Bash(grep -v \"^\\\\./\\\\.env:\")",
+      "Bash(xxd)",
+      "Bash(export JAVA_HOME=\"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\")",
+      "Bash(./mvnw -q -o flyway:migrate)",
+      "Bash(./mvnw flyway:migrate)",
+      "Bash(./mvnw test *)",
+      "Bash(find 'C:\\\\Users\\\\DELL/.m2/repository/org/springframework/boot/spring-boot-dependencies/4.1.0' -name *.pom)",
+      "Bash(find 'C:\\\\Users\\\\DELL/.m2/repository/org/testcontainers/testcontainers-bom' -name *.pom)",
+      "Bash(find 'C:\\\\Users\\\\DELL/.m2/repository/org/springframework/boot/spring-boot-starter-parent/4.1.0' -name *.pom)",
+      "Bash(./mvnw -q help:effective-pom -Doutput=/tmp/effective-pom.xml)",
+      "Bash(./mvnw -q test-compile)",
+      "Bash(./mvnw verify *)",
+      "Bash(./mvnw spotless:apply)",
+      "Bash(xargs -I{} sh -c 'echo ==={}===; cat \"{}\"')",
+      "Bash(grep -n \"^#\\\\{1,4\\\\} \" docs/sessions/2026-08-22-research-ad-005-persistence.md)",
+      "Bash(export JAVA_HOME=\"C:/Program Files/Android/Android Studio/jbr\")",
+      "Bash(./mvnw -o -q test)",
+      "Bash(./mvnw -o -Pdb-integration-test test)",
+      "Bash(python -)",
+      "Bash(./mvnw package *)",
+      "Bash(docker --version)",
+      "Bash(mkdir -p \"/c/Users/DELL/AppData/Local/Temp/claude/c--Users-DELL-Documents-Osman-Waleed-Fr-user-update/ffe21f7e-bb1c-47ca-ba21-9cb17f25cfef/scratchpad\")",
+      "Bash(/c/Python312/python -)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\" ./mvnw test -Pdb-integration-test)",
+      "Bash(/c/Users/DELL/AppData/Local/Pub/Cache/bin/fvm.bat flutter *)",
+      "Bash(git config *)",
+      "Bash(./mvnw -q flyway:migrate)",
+      "Bash('C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\\\\fvm.bat' flutter *)",
+      "Bash('C:\\\\Users\\\\DELL\\\\AppData\\\\Local\\\\Pub\\\\Cache\\\\bin\\\\fvm.bat' dart *)",
+      "Bash(export MSYS_NO_PATHCONV=1)",
+      "Bash(python -c ' *)",
+      "Bash(awk 'length>100 {printf \"%s:%d:%d\\\\n\", FILENAME, NR, length}' backend/src/test/java/com/sfbank/bayanati/AppSchemaConnectivityIntegrationTest.java backend/src/main/resources/db/migration/V0028__app_birth_country_customer_entry.sql backend/src/main/resources/db/migration/V0029__app_provenance_matrix_version_2.sql)",
+      "Bash(./mvnw -q test -Pdb-integration-test)",
+      "Bash(./mvnw -q spotless:check)",
+      "Bash(grep -n \"^#\\\\{1,4\\\\} \" docs/journeys/customer.md)",
+      "Bash(mkdir -p .claude/agents)",
+      "Bash(cp ~/.claude/agents/researcher.md .claude/agents/researcher.md)",
+      "Bash(cp ~/.claude/agents/reviewer.md .claude/agents/reviewer.md)",
+      "Bash(sed -n '712,817p' docs/sessions/2026-08-29-research-ad-002c-messaging.md)",
+      "Bash(sed -n '1,118p' docs/components/messaging.md)",
+      "Bash(find 'C:\\\\Users\\\\DELL/.m2' -iname spring-test-*.jar)"
+    ],
+    "additionalDirectories": [
+      "\\tmp",
+      "C:\\Users\\DELL\\AppData\\Local\\Temp\\claude\\c--Users-DELL-Documents-Osman-Waleed-Fr-user-update\\ffe21f7e-bb1c-47ca-ba21-9cb17f25cfef"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block-generated.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

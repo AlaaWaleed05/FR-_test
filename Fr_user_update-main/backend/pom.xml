@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.1.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.sfbank.bayanati</groupId>
+	<artifactId>backend</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>backend</name>
+	<description>Fr_user_update backend orchestrator</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+		<!--
+			S2-02: the connectivity integration test is tagged @Tag("integration") and
+			excluded by default so ./mvnw test / verify never need Docker. The
+			db-integration-test profile below clears this to actually run it.
+		-->
+		<!-- integration: needs Docker (see the db-integration-test profile). live: calls the bank's
+		     real core-banking middleware (S3-02, HttpCoreBankingClientLiveTest); never part of any
+		     gate, enabled only by hand with excluded.test.groups cleared plus the endpoint env var.
+		     load: S9-08's capacity measurement (see the load-test profile). Minutes of deliberate
+		     sleeping, so it belongs in no gate at all.
+
+		     THE TRAP THIS LIST SETS. JUnit excludes only what is named here, so a NEW TAG THAT IS
+		     NOT ADDED TO EVERY LIST RUNS EVERYWHERE. That is the opposite of the intuition, which
+		     is that an unknown tag is inert. `load` therefore appears in this list AND in
+		     db-integration-test's below; omitting the second would have put a multi-minute
+		     measurement inside the coverage gate. -->
+		<excluded.test.groups>integration,live,load</excluded.test.groups>
+		<!--
+			Empty means "no tag filter", which is what every build except load-test wants.
+			EXCLUSIONS ALONE CANNOT EXPRESS "only this tag": excluding integration and live still
+			runs every UNTAGGED test, so the first load-test run executed 1104 unit tests alongside
+			the measurement and reported a combined time. Found by running it.
+		-->
+		<included.test.groups />
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+
+		<!--
+			S7-07: the ALB target group needs a health check, and this codebase had no endpoint
+			that answers one. Every existing route is a POST or requires a session, and a target
+			group that accepts a 405 would prove only that a servlet container is listening.
+
+			SCOPE. Boot exposes ONLY `health` over HTTP by default and shows no details unless
+			asked; application-aws.properties restates both rather than relying on the default.
+			The endpoint is not under /api/v1/**, so it matches NEITHER SecurityFilterChain in
+			auth.config.SecurityConfiguration and no security change was needed or made — and it
+			is not publicly reachable either way: the ALB is internal, and the CloudFront
+			distribution forwards only /api/* to it. Reachable from inside the VPC, by the health
+			checker, and from nowhere else.
+		-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!--
+			S4-05 (AD-002e): back-office authentication. Two SecurityFilterChain beans are added
+			in the same commit as this dependency (auth.config.SecurityConfiguration) — adding
+			the starter alone secures the entire application by default, including the nine
+			unauthenticated customer/mobile prefixes, which would fail ~549 existing tests at
+			once. See docs/components/backoffice-auth.md.
+		-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+
+		<!--
+			S3-12: builds and verifies the Uqudo stub's compact JWS (docs/components/uqudo-sdk.md
+			names this exact library as "the version Spring Boot manages", since it already backs
+			nimbus-jose-jwt via spring-security-oauth2-jose in a typical Spring Security setup).
+			Added directly here rather than relying on a transitive pull: this project's Spring
+			Security usage (S4-05, spring-boot-starter-security) is plain form-login/session auth
+			with no OAuth2/JOSE module, so spring-security-oauth2-jose is still not on the
+			classpath and would not provide this transitively even now.
+		-->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.37.3</version>
+		</dependency>
+
+		<!--
+			S4-02: AD-006 names Apache POI SXSSF as the XLSX export mechanism. Not managed by
+			spring-boot-starter-parent's BOM, so pinned explicitly here, same as nimbus-jose-jwt
+			above. 5.5.1 is Maven Central's current latest for poi-ooxml (verified against its
+			maven-metadata.xml, lastUpdated 2025-11-30). AD-006 settled the library, not a
+			version, so this is a routine dependency pin, not a decision needing @agent-researcher
+			(that rule names Uqudo/Oracle/Civil Registry, external network integrations; POI is a
+			local library with no network surface).
+		-->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+
+		<!--
+			S8-33: AD-014 names Apache FOP as the printed-form renderer (XSL-FO to PDF,
+			Apache-2.0). `fop-core` rather than the `fop` aggregator: the aggregator adds the
+			command-line driver and the plan/RTF modules we never invoke, while core carries
+			the layout engine and the PDF output. Not managed by spring-boot-starter-parent's
+			BOM, so pinned explicitly, same as poi-ooxml above. 2.11 is Maven Central's current
+			latest (maven-metadata.xml, lastUpdated 2025-05-06) and is the version AD-014
+			selected. AD-014 carried one [UNVERIFIED] that had to be discharged BEFORE this pin,
+			and it is: FOP 2.11's release notes state no minimum JDK, but fop-parent-2.11.pom
+			sets java.version=8, so the Java 21 enforcer rule is satisfied with room to spare.
+
+			THE TWO EXCLUSIONS WERE MEASURED, NOT GUESSED. Research R-6 predicted that fop-core
+			and poi-ooxml would collide over shared XML and commons libraries and that a pin
+			would be needed. `mvn dependency:tree` run both ways, with the exclusions and
+			without, says what actually happens:
+
+			  * `xml-apis:xml-apis:1.4.01` DOES arrive, declared by eight Batik modules
+			    (batik-anim, -bridge, -css, -dom, -extension, -parser, -svg-dom, -transcoder),
+			    and it is the reason this element exists. It is the Java 1.4-era
+			    endorsed-standards jar: on Java 21 it puts a 2009 copy of `org.w3c.dom` and
+			    `org.xml.sax` on the classpath, shadowing the platform's own `java.xml` module.
+			    FOP resolves those classes from the platform without it. Excluded.
+			  * `xml-apis:xml-apis-ext:1.3.04` arrives by the same paths and is excluded on a
+			    DIFFERENT ground, stated separately because it is not the same argument. It
+			    carries `org.w3c.dom.svg`, `org.w3c.dom.smil` and `org.w3c.css.sac`, which the
+			    JDK does NOT ship and no Batik jar bundles, so there is no platform fallback
+			    here. It is excluded because nothing we author reaches Batik: the FO is
+			    generated in-process and the form's logo is a PNG. The honest consequence,
+			    recorded rather than discovered later - if a future template ever uses an SVG
+			    or an `fo:instream-foreign-object`, the failure is a NoClassDefFoundError
+			    inside Batik, and this exclusion is the first place to look.
+			  * commons-logging is NOT a collision, contrary to the prediction. It resolves to
+			    1.3.6 either way, because spring-boot-dependencies manages the version and a
+			    BOM beats nearest-wins for a transitive. Excluding it would buy nothing, so it
+			    is deliberately NOT excluded; spring-core needs it regardless.
+			  * commons-io: FOP asks for 2.17.0 and POI for 2.21.0, both at depth 2, so the
+			    tie is broken by declaration order and POI's newer 2.21.0 wins because POI is
+			    declared first above. Left unpinned deliberately: the losing outcome is FOP's
+			    own declared version, which is by definition one it works with, so a reordering
+			    would be untidy rather than broken. Worth knowing, not worth a pin.
+
+			Batik arrives with this and carries its own CVE history (research R-4). The
+			renderer processes only FO we generate ourselves, never an uploaded document, and
+			the form's logo is a PNG rather than an SVG, so nothing we author reaches Batik at
+			all.
+		-->
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>fop-core</artifactId>
+			<version>2.11</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis-ext</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!--
+			S2-02 finding: Spring Boot 4.1 split FlywayAutoConfiguration out of the umbrella
+			spring-boot-autoconfigure jar into its own module. flyway-core alone (above) is
+			NOT sufficient to activate it — confirmed live: the connectivity integration test
+			initially got a null Flyway bean with only flyway-core/flyway-database-postgresql
+			present. This is the actual dependency spring-boot-dependencies 4.1.0 manages for
+			it.
+
+			Test scope only, deliberately: the deployed application still runs migrations only
+			via the flyway-maven-plugin (see below), connecting as fru_migrator, never via
+			Spring Boot's own FlywayAutoConfiguration at application startup. AD-005 report §11
+			and application.properties both assume the running app connects only as fru_app,
+			with zero DDL rights — adding this at main scope would silently change that by
+			making the packaged app run Flyway migrate() as fru_migrator on every boot.
+		-->
+		<!--
+			S8-33. PDFBox earns MAIN scope, and the reason changed on 2026-09-14.
+
+			It arrived test-scope-only, to rasterise the AD-014 acceptance render to a PNG a human
+			could look at and to extract its text. That comment ended "Deliberately NOT main scope:
+			nothing the application ships reads a PDF. The renderer only writes them." That is no
+			longer true.
+
+			The product owner ruled that a printed salary certificate is a separate PAGE, not a
+			separate FILE. The certificate is the one artifact that may be `application/pdf` - it is
+			the only kind whose content-type allow-list admits one (OperatorImagePolicy) - and
+			Apache FOP renders XSL-FO and cannot lay out an existing PDF page at all. So the
+			finished document has to be assembled: FOP writes the form and its image attachments,
+			and PDFBox appends the certificate's pages.
+
+			This deliberately reverses the reasoning in wayfinder ticket 05 decision 9, which
+			avoided PDFBox because the certificate was then ruled a separate document ("merging
+			would have meant adding PDFBox purely to staple a customer's file onto the bank's").
+			That premise is gone; the decision is amended rather than contradicted in silence.
+
+			Version stays 3.0.3, the exact version fop-core 2.11 already resolves fontbox and
+			pdfbox-io to, so no second fontbox joins FOP's on the classpath.
+		-->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-flyway</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!--
+			No ojdbc dependency here yet. The driver artifact (ojdbc8 vs ojdbc17) is
+			blocked on OQ-006 — the bank's Oracle Database server version is not yet
+			known. See PROJECT_PLAN.md Open questions. Do not add ojdbc speculatively.
+		-->
+
+		<!--
+			Test-only. Backs the S2-02 connectivity integration test, which boots the full
+			Spring context (DataSource + Flyway autoconfiguration included, unlike the
+			BackendApplicationTests smoke test) against a real, ephemeral PostgreSQL 18
+			container. Versions managed by the spring-boot-starter-parent 4.1.0 BOM.
+		-->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.6.3</version>
+				<executions>
+					<execution>
+						<id>enforce-java-21</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>[21,22)</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>3.10.0</version>
+				<configuration>
+					<java>
+						<googleJavaFormat/>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<id>spotless-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!--
+					Used only for the manual `./mvnw flyway:migrate` proof runs against the
+					local docker-compose Postgres — see docs/components/persistence.md and
+					the S2-01 session report. Not invoked by test/verify; connection details
+					come only from environment variables, never a literal here.
+				-->
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>12.4.0</version>
+				<configuration>
+					<url>jdbc:postgresql://localhost:${env.DB_PORT}/${env.DB_NAME}</url>
+					<user>fru_migrator</user>
+					<password>${env.DB_MIGRATOR_PASSWORD}</password>
+					<placeholders>
+						<fru_app_password>${env.FRU_APP_PASSWORD}</fru_app_password>
+						<fru_sealer_password>${env.FRU_SEALER_PASSWORD}</fru_sealer_password>
+					</placeholders>
+					<locations>
+						<location>filesystem:src/main/resources/db/migration</location>
+					</locations>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.flywaydb</groupId>
+						<artifactId>flyway-database-postgresql</artifactId>
+						<version>12.4.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludedGroups>${excluded.test.groups}</excludedGroups>
+					<groups>${included.test.groups}</groups>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.15</version>
+				<configuration>
+					<excludes>
+						<exclude>com/sfbank/bayanati/BackendApplication.class</exclude>
+						<!-- S1-02: throwaway device-spike plumbing, profile-gated, deliberately outside the
+						     coverage gate (no tests by design; see docs/sessions/2026-09-03-s1-02-device-spike.md). -->
+						<exclude>com/sfbank/bayanati/spike/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.80</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<!--
+				./mvnw test -Pdb-integration-test runs the S2-02 connectivity integration
+				test too. Requires Docker running (Testcontainers). See CLAUDE.md Commands.
+			-->
+			<id>db-integration-test</id>
+			<properties>
+				<!-- `load` stays excluded here: this profile IS the coverage gate (CLAUDE.md), and
+				     S9-08's measurement sleeps for minutes on purpose. -->
+				<excluded.test.groups>live,load</excluded.test.groups>
+			</properties>
+		</profile>
+		<profile>
+			<!--
+				S9-08's capacity measurement, and nothing else:
+				    ./mvnw test -Pload-test
+				Requires Docker (Testcontainers), takes several minutes by design, and writes its
+				findings to target/capacity-measurement.txt.
+
+				"And nothing else" is made true by the INCLUDE below, not by the excludes. The
+				first version of this profile only cleared `load` from the exclusions, which still
+				left every untagged unit test to run: 1104 of them, alongside the measurement, in
+				one combined timing. Selecting the tag positively is the only way to say "this and
+				nothing else", which is also why `load` must NOT appear in the excludes here.
+			-->
+			<id>load-test</id>
+			<properties>
+				<included.test.groups>load</included.test.groups>
+				<excluded.test.groups>integration,live</excluded.test.groups>
+			</properties>
+		</profile>
+	</profiles>
+
+</project>

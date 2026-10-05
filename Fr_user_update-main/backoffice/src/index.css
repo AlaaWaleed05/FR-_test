@@ -1,0 +1,56 @@
+/* Replaces the Vite/marketing-template scaffold this file started as (a centered 1126px column
+   with vertical borders and a landing-page heading scale) -- wrong for an admin data table once
+   App.tsx stopped being a one-line placeholder. Found under review. */
+
+/*
+  IBM Plex Sans Arabic, SELF-HOSTED, added at S9-02 with the approved artboards.
+
+  The artboards' own `helmet` blocks pull this face from Google Fonts, and the first cut of this
+  rebuild copied that. It was wrong for where this ships. `docs/bank-hosting-specification.md`
+  section 5.1 enumerates the external destinations this system needs and warns that the bank's
+  default-deny egress policy blocks anything else SILENTLY -- and a font CDN is not on that list.
+  An operator browser inside the bank is the most likely thing in the system to be firewalled,
+  and the failure would be invisible to us: the screen would simply render in system-ui and no
+  one would know the approved typography had never loaded.
+
+  The files come from the repo's own copy, already vendored for the printed form at
+  `backend/src/main/resources/fonts/` under the OFL (licence shipped beside them). Only Regular
+  and SemiBold exist there, which is what the artboards lean on; 500 and 700 synthesise from
+  these rather than pulling two more faces over a link that may not resolve.
+
+  `font-display: swap` so Arabic text is readable from the first paint rather than invisible
+  while the face loads.
+*/
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('/fonts/IBMPlexSansArabic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('/fonts/IBMPlexSansArabic-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Tahoma, Arial, sans-serif;
+  color-scheme: light dark;
+}

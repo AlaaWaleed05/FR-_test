@@ -1,0 +1,17 @@
+<!-- @dsCard group="Spacing" viewport="700x200" name="Control heights" subtitle="44px is the hard tap floor; nothing interactive goes below it." -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; }
+  .sw { display:flex; flex-direction:column; gap:6px; }
+  .chip { width:104px; height:56px; }
+  .n { font-size:11px; font-family:var(--font-label); letter-spacing:.06em; color:var(--text-muted); }
+  .v { font-size:11px; font-variant-numeric:tabular-nums; color:var(--text-subtle); }
+</style>
+<div style="display:flex; gap:12px; align-items:flex-end;">
+  <div class="sw"><div style="width:120px; height:54px; background:var(--navy-800);"></div><div class="n">ACTION</div><div class="v">54</div></div>
+  <div class="sw"><div style="width:120px; height:52px; border:1px solid var(--line-field); background:var(--paper);"></div><div class="n">FIELD</div><div class="v">52</div></div>
+  <div class="sw"><div style="width:58px; height:58px; border:1px solid var(--line-field); background:var(--paper);"></div><div class="n">OTP</div><div class="v">58</div></div>
+  <div class="sw"><div style="width:44px; height:44px; border:1px dashed var(--line-field);"></div><div class="n">TAP MIN</div><div class="v">44</div></div>
+</div>

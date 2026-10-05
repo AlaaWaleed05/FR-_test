@@ -1,0 +1,38 @@
+:root {
+  --ease-entrance: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-trek: cubic-bezier(0.25, 0.8, 0.3, 1);
+  --ease-progress: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-loop: ease-in-out;
+
+  --dur-fast: 120ms;
+  --dur-entrance: 900ms;
+  --dur-trek: 1500ms;
+  --dur-progress: 2400ms;
+  --dur-halo: 4200ms;
+}
+
+@keyframes bayanati-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes bayanati-halo {
+  0%, 100% { opacity: 0.42; transform: scale(1); }
+  50%      { opacity: 0.72; transform: scale(1.06); }
+}
+@keyframes bayanati-trek {
+  0%   { transform: translateX(190px); opacity: 0; }
+  18%  { opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes bayanati-bob {
+  0%, 100% { transform: translateY(0) rotate(-0.6deg); }
+  50%      { transform: translateY(-5px) rotate(0.6deg); }
+}
+@keyframes bayanati-load {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-entrance: 1ms; --dur-trek: 1ms; }
+}

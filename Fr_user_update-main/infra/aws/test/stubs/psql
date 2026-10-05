@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Stub psql for infra/aws/test/run-gate-tests.sh. Never touches a network or a database.
+# Behaviour is chosen by STUB_* environment variables so the harness can drive each branch
+# of 04-db-gates.sh. Anything unrecognised exits 0 with no output, which is deliberate:
+# an unmatched query must not look like a passing verdict.
+ARGS="$*"
+case "$ARGS" in
+  *-c*|*-f*|*-Atc*) : ;;
+  *) ARGS="$ARGS $(cat)" ;;   # the CREATE EVENT TRIGGER probe arrives on stdin
+esac
+
+die() { echo "psql: $1" >&2; exit 2; }
+
+case "$ARGS" in
+  *"SELECT version()"*)
+    [ "${STUB_CONNECT:-ok}" = ok ] || die "could not connect to server"
+    echo "PostgreSQL 18.0 on aarch64-unknown-linux-gnu" ;;
+
+  *pg_stat_ssl*)
+    echo "ssl=t cipher=TLSv1.3" ;;
+
+  *pg_collation*)
+    case "${STUB_M3A:-pass}" in
+      pass)  echo "PASS  ar-x-icu present in pg_collation" ;;
+      fail)  echo "FAIL  ar-x-icu MISSING" ;;
+      error) die "server closed the connection unexpectedly" ;;
+    esac ;;
+
+  *"CREATE DATABASE fru"*)
+    case "${STUB_CREATEDB:-ok}" in
+      ok)      : ;;
+      exists)  echo 'ERROR:  database "fru" already exists' >&2; exit 1 ;;
+      refused) echo "ERROR:  permission denied to create database" >&2; exit 1 ;;
+    esac ;;
+
+  *datlocprovider*)
+    case "${STUB_M3B:-pass}" in
+      pass)  echo "datlocprovider=i  encoding=UTF8  datlocale=ar  PASS default provider is ICU" ;;
+      fail)  echo "datlocprovider=c  encoding=UTF8  datlocale=ar  FAIL default provider is NOT ICU" ;;
+      error) die "relation pg_database does not exist" ;;
+    esac ;;
+
+  *'COLLATE "ar-x-icu"'*)
+    case "${STUB_ICU:-ok}" in
+      ok)    echo "623 625 627 622" ;;
+      same)  echo "622 623 625 627" ;;
+      error) die 'ERROR:  collation "ar-x-icu" for encoding "UTF8" does not exist' ;;
+    esac ;;
+
+  *'COLLATE "C"'*)
+    case "${STUB_CORD:-ok}" in
+      ok)    echo "622 623 625 627" ;;
+      error) die "server closed the connection unexpectedly" ;;
+    esac ;;
+
+  *g_role_alt.sql*)
+    [ "${STUB_ROLE_ALT:-ok}" = ok ] || die "ERROR:  permission denied"
+    ;;
+
+  *g_role.sql*)
+    case "${STUB_ROLE:-ok}" in
+      ok)      : ;;
+      exists)  echo 'ERROR:  role "fru_migrator" already exists' >&2; exit 1 ;;
+      refused) echo "ERROR:  permission denied to create role" >&2; exit 1 ;;
+    esac ;;
+
+  *"ALTER DATABASE fru OWNER"*)
+    [ "${STUB_OWNER:-ok}" = ok ] || { echo "ERROR:  must be owner of database fru" >&2; exit 1; }
+    ;;
+
+  *pg_get_userbyid*)
+    echo "fru owner is fru_migrator" ;;
+
+  # ORDER MATTERS TWICE HERE.
+  # (1) The M-4 verdict SQL contains the literal words "CREATE EVENT TRIGGER" inside its own
+  #     PASS string, so it must be matched before the CREATE branch or that swallows it.
+  # (2) The post-drop CONFIRMATION query also selects from pg_event_trigger, but expects a
+  #     bare count. Matching it on the verdict's own text keeps the two apart; without this
+  #     the confirmation received "PASS  CREATE EVENT TRIGGER is permitted on RDS" where it
+  #     wanted "0", and the happy path failed.
+  *"is permitted on RDS"*)
+    case "${STUB_M4:-pass}" in
+      pass)  echo "PASS  CREATE EVENT TRIGGER is permitted on RDS" ;;
+      fail)  echo "FAIL  statement succeeded but no trigger exists" ;;
+      error) die "server closed the connection unexpectedly" ;;
+    esac ;;
+
+  # The post-drop confirmation: 0 means the probe trigger really is gone. STUB_DROP=leftover
+  # models a DROP that silently failed, which used to be announced as "probe objects removed".
+  *pg_event_trigger*)
+    case "${STUB_DROP:-clean}" in
+      clean)    echo "0" ;;
+      leftover) echo "1" ;;
+    esac ;;
+
+  *"CREATE EVENT TRIGGER"*)
+    [ "${STUB_EVT:-ok}" = ok ] || { echo "ERROR:  permission denied to create event trigger" >&2; exit 1; }
+    ;;
+
+  *"DROP EVENT TRIGGER"*|*"DROP FUNCTION"*) : ;;
+esac
+exit 0

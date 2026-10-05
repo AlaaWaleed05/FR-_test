@@ -1,0 +1,166 @@
+openapi: 3.0.1
+info:
+  title: Uqudo ID API
+  contact:
+    email: hello@uqu.do
+  version: "1.0"
+servers:
+- url: https://id.uqudo.io
+tags:
+- name: info
+  description: Info API
+paths:
+  /api/v1/info/{sessionId}:
+    get:
+      tags:
+      - info
+      summary: Info API
+      description: |-
+        Returns the information collected during the SDK session.
+        Note: This endpoint it's only necessary when you use the QR code flow, see https://docs.uqudo.com/docs/getting-started/qr-code-app for details.
+      operationId: info2
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema:
+          pattern: "[\\p{XDigit}]{8}-[\\p{XDigit}]{4}-[\\p{XDigit}]{4}-[\\p{XDigit}]{4}-[\\\
+            p{XDigit}]{12}"
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "String representing a JWS Compact Serialization, a representation\
+            \ of the JWS as a compact, URL-safe string"
+          content:
+            application/jwt:
+              schema:
+                type: string
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+    delete:
+      tags:
+      - info
+      summary: Info delete API
+      description: This endpoint allows you to delete the session data that have been
+        cached without waiting for the automatic deletion. The session id is the value
+        of the "jti" property of the JWS returned by the uqudo SDK.
+      operationId: infoDelete
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema:
+          pattern: "[\\p{XDigit}]{8}-[\\p{XDigit}]{4}-[\\p{XDigit}]{4}-[\\p{XDigit}]{4}-[\\\
+            p{XDigit}]{12}"
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+  /api/v1/info/img/{id}:
+    get:
+      tags:
+      - info
+      summary: Info image API
+      description: The following API allows you to download the image based on the
+        resource id provided in the SDK result
+      operationId: img
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Image file
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "404":
+          description: "Not Found: Resource not found or expired. Images are kept\
+            \ only for the duration of the session, 30 minutes."
+        "500":
+          description: "Internal Server Error: Unexpected error"
+  /api/v1/info:
+    get:
+      tags:
+      - info
+      summary: Info API
+      description: |-
+        Returns the information collected during the SDK session.
+        Note: This endpoint it's only necessary when you use the QR code flow, see https://docs.uqudo.com/docs/getting-started/qr-code-app for details.
+      operationId: info
+      parameters:
+      - name: UQ-Session-ID
+        in: header
+        description: Session ID
+        required: true
+        schema:
+          pattern: "[\\p{XDigit}]{8}-[\\p{XDigit}]{4}-[\\p{XDigit}]{4}-[\\p{XDigit}]{4}-[\\\
+            p{XDigit}]{12}"
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "String representing a JWS Compact Serialization, a representation\
+            \ of the JWS as a compact, URL-safe string"
+          content:
+            application/jwt:
+              schema:
+                type: string
+        "400":
+          description: "Bad Request: Missing required input or invalid format"
+        "401":
+          description: "Unauthorized: No valid access token has been provided"
+        "403":
+          description: "Forbidden: Access token doesn't have permission to use the\
+            \ requested feature"
+        "500":
+          description: "Internal Server Error: Unexpected error"
+components: {}

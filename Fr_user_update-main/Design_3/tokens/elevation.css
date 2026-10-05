@@ -1,0 +1,10 @@
+:root {
+  /* There are no drop shadows in this system. Depth comes from the steel glow,
+     the pearl ring, and the dune curve. These tokens exist so consumers reach
+     for the right thing instead of inventing a box-shadow. */
+  --glow-brand: radial-gradient(65% 190% at 14% 65%, rgba(89,128,166,0.34) 0%, rgba(11,28,71,0) 68%);
+  --glow-brand-rtl: radial-gradient(65% 190% at 86% 65%, rgba(89,128,166,0.34) 0%, rgba(11,28,71,0) 68%);
+  --glow-hero: radial-gradient(100% 46% at 50% 14%, rgba(89,128,166,0.44) 0%, rgba(11,28,71,0) 70%);
+  --ring-pearl: 0 0 0 1.5px rgba(89, 128, 166, 0.8);
+  --shadow-none: none;
+}

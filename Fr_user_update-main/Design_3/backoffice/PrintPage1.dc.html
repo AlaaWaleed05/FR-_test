@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+    a { color: #3d5f80; }
+    .lat { font-family: "IBM Plex Sans Condensed", system-ui, sans-serif; }
+    .sec { font-size: 14px; font-weight: 600; color: #0b1c47; background: #eef2f7; padding: 5px 10px; border-inline-start: 3px solid #0b1c47; }
+    .f { display: flex; gap: 8px; padding: 5px 10px; border-bottom: 1px solid rgba(11,28,71,0.1); align-items: baseline; }
+    .k { width: 132px; flex-shrink: 0; font-size: 12px; color: rgba(11,28,71,0.72); }
+    .v { font-size: 15px; color: #0b1c47; }
+    .na { font-size: 15px; color: rgba(11,28,71,0.5); }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+    .tag { font-size: 10.5px; border: 1px solid rgba(11,28,71,0.28); padding: 0 5px; color: rgba(11,28,71,0.65); }
+  </style>
+</helmet>
+
+<div dir="rtl" style="width: 794px; height: 1123px; background: #ffffff; color: #0b1c47; display: flex; flex-direction: column; overflow: hidden;">
+
+  <!-- Header: logo, bank name, form title. Repeated on every page. -->
+  <div style="padding: 34px 48px 0; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <img src="sfb-logo-circle.png" alt="" style="width: 52px; height: 52px; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 17px; font-weight: 700;">البنك السوداني الفرنسي</span>
+          <span class="lat" style="font-size: 10.5px; letter-spacing: 0.14em; color: rgba(11,28,71,0.65);">SUDANESE FRENCH BANK</span>
+        </div>
+      </div>
+      <div style="text-align: left; display: flex; flex-direction: column; gap: 3px;">
+        <span style="font-size: 19px; font-weight: 600;">استمارة تحديث البيانات</span>
+        <span style="font-size: 11px; color: rgba(11,28,71,0.65);">للاستخدام الداخلي — لا تُسلَّم للعميل</span>
+      </div>
+    </div>
+    <div style="height: 2px; background: #0b1c47;"></div>
+  </div>
+
+  <!-- Who this is, and when. The two things a filed form is retrieved by. -->
+  <div style="padding: 12px 48px 0; flex-shrink: 0;">
+    <div style="background: #eef2f7; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <span style="font-size: 11.5px; color: rgba(11,28,71,0.72);">اسم العميل</span>
+        <span style="font-size: 18px; font-weight: 600;">محمد أحمد الطيب عبدالله</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 3px; text-align: left;">
+        <span style="font-size: 11.5px; color: rgba(11,28,71,0.72);">الرقم المرجعي</span>
+        <span class="lat" style="font-size: 18px; font-weight: 600;">FRU-000000999</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 26px; padding: 7px 2px 0; font-size: 11.5px; color: rgba(11,28,71,0.72);">
+      <span>تاريخ التقديم من التطبيق: <span class="lat" style="color: #0b1c47;">06/09/2026 11:01</span></span>
+      <span>المشغّل الطابع: <span style="color: #0b1c47;">فحص (مشغّل)</span></span>
+      <span>وقت الطباعة: <span class="lat" style="color: #0b1c47;">13/09/2026 14:52</span></span>
+      <span>مصدر البيانات: <span style="color: #8a6a1f; font-weight: 600;">يدوي</span></span>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; padding: 12px 48px 0; display: flex; flex-direction: column; gap: 9px; overflow: hidden;">
+
+    <div>
+      <div class="sec">بيانات الاستمارة</div>
+      <div class="grid2">
+        <div class="f"><span class="k">التاريخ</span><span class="v lat">06/09/2026</span></div>
+        <div class="f"><span class="k">المصرف / الفرع</span><span class="v">الجمهورية</span></div>
+        <div class="f"><span class="k">رقم الحساب</span><span class="v lat">0000001001</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">البيانات الشخصية</div>
+      <div>
+        <!-- A dual-source field: both values, each tagged by origin. -->
+        <div class="f">
+          <span class="k">الاسم الكامل بالعربي</span>
+          <span style="display: flex; flex-direction: column; gap: 2px;">
+            <span class="v">محمد أحمد الطيب عبدالله <span class="tag">السجل المدني</span></span>
+            <span style="font-size: 13px; color: rgba(11,28,71,0.65);">محمد أحمد الطيب <span class="tag lat">Uqudo</span></span>
+          </span>
+        </div>
+        <div class="f">
+          <span class="k">الاسم الكامل بالانجليزي</span>
+          <span class="v lat">MOHAMED AHMED ALTAYEB ABDALLA <span class="tag">السجل المدني</span></span>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="f"><span class="k">الرقم الوطني</span><span class="v lat">000-0000-0001</span></div>
+        <div class="f"><span class="k">الجنسية</span><span class="v">السودان</span></div>
+        <div class="f"><span class="k">النوع</span><span class="v">ذكر</span></div>
+        <div class="f"><span class="k">الجنس</span><span class="na">غير متاح</span></div>
+        <div class="f"><span class="k">المواطنة</span><span class="v">السودان</span></div>
+        <div class="f">
+          <span class="k">مستوي التعليم</span>
+          <span class="v">دراسات عليا <span style="background: #8a6a1f; color: #fff; font-size: 10px; padding: 1px 5px;">يدوي</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">الحالة الاجتماعية</div>
+      <div class="grid2">
+        <div class="f"><span class="k">الحالة الاجتماعية</span><span class="v">أعزب <span style="background: #8a6a1f; color: #fff; font-size: 10px; padding: 1px 5px;">يدوي</span></span></div>
+        <div class="f"><span class="k">اسم الزوج/الزوجة</span><span class="na">غير متاح</span></div>
+        <div class="f"><span class="k">له أطفال</span><span class="na">غير متاح</span></div>
+        <div class="f"><span class="k">عدد الأطفال</span><span class="na">غير متاح</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">بيانات الميلاد</div>
+      <div class="grid2">
+        <div class="f"><span class="k">تاريخ الميلاد</span><span class="v lat">01/01/1990</span></div>
+        <div class="f"><span class="k">بلد الميلاد</span><span class="v">السودان</span></div>
+        <div class="f"><span class="k">الولاية</span><span class="v">الخرطوم</span></div>
+        <div class="f"><span class="k">المدينة</span><span class="v">أم درمان</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">الاتصال</div>
+      <div class="grid2">
+        <div class="f"><span class="k">التلفون</span><span class="v lat"><bdi>+249900000123</bdi></span></div>
+        <div class="f">
+          <span class="k">البريد الالكتروني</span>
+          <span class="v lat">sample.new@example.invalid <span style="background: #5980a6; color: #fff; font-size: 10px; padding: 1px 5px;">معدَّل</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">عنوان العمل</div>
+      <div class="grid2">
+        <div class="f"><span class="k">جهة العمل</span><span class="v">شركة تجريبية للتجارة</span></div>
+        <div class="f"><span class="k">الدولة</span><span class="v">السودان</span></div>
+        <div class="f"><span class="k">الولاية</span><span class="v">الخرطوم</span></div>
+        <div class="f"><span class="k">المحافظة</span><span class="v">أم درمان</span></div>
+        <div class="f"><span class="k">المنطقة</span><span class="v">الثورة</span></div>
+        <div class="f"><span class="k">المدينة</span><span class="v">المهدية</span></div>
+        <div class="f"><span class="k">الشارع</span><span class="v lat">8</span></div>
+        <div class="f"><span class="k">المربع</span><span class="na">غير متاح</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer: page number, and the list versions this form's coded values resolved against. -->
+  <div style="padding: 0 48px 28px; flex-shrink: 0;">
+    <div style="height: 1px; background: rgba(11,28,71,0.28); margin-bottom: 7px;"></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: rgba(11,28,71,0.65);">
+      <span>إصدارات القوائم المرجعية: المهن <span class="lat">v4</span> · التقسيمات الإدارية <span class="lat">v2</span> · الدول <span class="lat">v1</span> · مصادر الدخل <span class="lat">v3</span> · مستوي التعليم <span class="lat">v2</span> · مصفوفة المصادر <span class="lat">v2</span></span>
+      <span class="lat" style="font-weight: 600; color: #0b1c47;">صفحة 1 من 3</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

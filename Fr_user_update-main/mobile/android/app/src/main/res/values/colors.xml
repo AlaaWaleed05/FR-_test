@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AD-012 fork 1 (product-owner ruling 2026-09-12): the single brand ground is now the
+         Design_3 navy, replacing D2.1's measured #105097. Used for the adaptive-icon background
+         layer, the launch window (both the pre-Android-12 windowBackground and the API 31+
+         SplashScreen variant) and the Flutter theme's seed and pinned `primary`.
+
+         The NAME is kept as brand_blue rather than renamed: it is referenced from five other
+         resource files (drawable/, drawable-v21/, mipmap-anydpi-v26/ic_launcher.xml,
+         values/styles.xml, values-v31/styles.xml) and the rename would be churn with no reader
+         benefit. What matters is that this is the ONE declaration: if it ever disagrees with
+         AppTheme.brandNavy the native-to-Flutter handoff flashes.
+
+         White on #0b1c47 measures 16.52:1, past the 8.03:1 the old blue gave. -->
+    <color name="brand_blue">#0B1C47</color>
+</resources>

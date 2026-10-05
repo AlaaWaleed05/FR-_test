@@ -1,0 +1,49 @@
+:root {
+  /* Brand ground — from the owner's palette PDF (#111523 / #0f162b / #0c193a) */
+  --navy-900: #060f28;
+  --navy-800: #0b1c47;
+  --navy-700: #132a5e;
+  --navy-600: #16295c;
+  --ink:      #111523;
+
+  /* Accent — steel */
+  --steel-700: #3d5f80;
+  --steel-500: #5980a6;
+  --steel-300: #9dc0e0;
+  --steel-100: #e7ecf2;
+  --steel-050: #eef2f7;
+
+  /* Neutrals */
+  --paper:  #ffffff;
+  --ground: #f2f2f3;
+
+  /* Semantic */
+  --ok:    #2f7d5d;
+  --error: #9c2f2f;
+  --warn:  #8a6a1f;
+
+  /* Semantic aliases — use these in components */
+  --surface-page:    var(--paper);
+  --surface-canvas:  var(--ground);
+  --surface-brand:   var(--navy-800);
+  --surface-well:    var(--steel-050);
+  --surface-raised:  var(--steel-100);
+
+  --text-body:      var(--navy-800);
+  --text-muted:     rgba(11, 28, 71, 0.65);
+  --text-subtle:    rgba(11, 28, 71, 0.5);
+  --text-label:     rgba(11, 28, 71, 0.72);
+  --text-on-brand:  var(--paper);
+  --text-on-brand-muted: rgba(255, 255, 255, 0.75);
+  --text-accent:    var(--steel-500);
+
+  /* Boundaries — the field boundary is load-bearing, never decorative.
+     --line-field sits at 3.4:1 on paper, clearing the 3:1 control-boundary rule. */
+  --line-field:  rgba(11, 28, 71, 0.28);
+  --line-strong: rgba(11, 28, 71, 0.35);
+  --line-rule:   rgba(11, 28, 71, 0.14);
+  --line-soft:   rgba(11, 28, 71, 0.1);
+  --line-on-brand: rgba(255, 255, 255, 0.4);
+
+  --focus-ring: rgba(89, 128, 166, 0.22);
+}

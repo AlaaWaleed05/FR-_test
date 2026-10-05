@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- D1.2/D1.3: the launcher label is «بياناتي» ALONE. The full lockup «الفرنسي بياناتي»
+         carries the splash, the brand line and the store listing, not the home screen, where
+         a longer string truncates. Replaces the literal "mobile" the Flutter template left.
+         D1.4: no Latin transliteration appears anywhere in the UI. -->
+    <string name="app_name">بياناتي</string>
+</resources>

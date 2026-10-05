@@ -1,0 +1,49 @@
+<!-- @dsCard group="Brand" viewport="700x260" name="The dune curve" subtitle="Concentric with the pearl — the horizon is a 70px arc centred on the logo." -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body);
+         display:flex; gap:20px; align-items:flex-start; }
+  .stage { position:relative; width:390px; height:210px; flex:0 0 auto; overflow:hidden;
+           background:var(--paper); border:1px solid var(--line-rule); }
+  .n { font-size:12px; font-family:var(--font-label); letter-spacing:.1em; color:var(--text-muted); }
+  .note { font-size:13px; line-height:1.7; color:var(--text-muted); max-width:34ch; }
+  code { font-size:11px; }
+</style>
+
+<!-- Real geometry, 1:1. viewBox matches the rendered box exactly, so the arc stays a circle.
+     Coordinates are lifted from SFB Splash Screen.dc.html with y shifted by -300. -->
+<div class="stage">
+  <svg viewBox="0 0 390 210" width="390" height="210" style="position:absolute; left:0; top:0; display:block;">
+    <defs>
+      <linearGradient id="dcSky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0b1c47"></stop><stop offset="70%" stop-color="#0b1c47"></stop><stop offset="100%" stop-color="#132a5e"></stop>
+      </linearGradient>
+    </defs>
+    <path d="M0,0 H390 V124 C335,124 274.3,118.4 248.6,149 A70 70 0 0 1 141.4,149 C115.7,118.4 55,124 0,124 Z" fill="url(#dcSky)"></path>
+    <path d="M0,142 C52,142 104,130 130.7,158 A84 84 0 0 0 259.3,158 C286,130 338,142 390,142" fill="none" stroke="#5980a6" stroke-opacity=".45" stroke-width="1.2"></path>
+    <path d="M0,158 C48,158 88,142 115.3,170.9 A104 104 0 0 0 274.7,170.9 C301.7,142 342,158 390,158" fill="none" stroke="#5980a6" stroke-opacity=".22" stroke-width="1"></path>
+    <!-- construction: the ring the horizon traces -->
+    <circle cx="195" cy="104" r="70" fill="none" stroke="#9dc0e0" stroke-opacity=".5" stroke-width="1" stroke-dasharray="3 4"></circle>
+    <circle cx="195" cy="104" r="1.5" fill="#9dc0e0"></circle>
+  </svg>
+  <div style="position:absolute; left:139px; top:48px; width:112px; height:112px; border-radius:50%; overflow:hidden; background:#fff;">
+    <img src="../assets/sfb-logo-circle.png" alt="" style="width:100%; height:100%; object-fit:cover; display:block;">
+  </div>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:10px;">
+  <div class="n">CONSTRUCTION</div>
+  <div class="note">
+    The horizon is an <strong>arc of radius 70 centred on the pearl</strong> (dashed) — the same radius as the
+    mark's ring, so the ring completes the circle the horizon traces. The pearl is 112px, leaving it seated
+    14px inside the notch.
+  </div>
+  <div class="note">
+    The two contours are wider arcs from the same centre, r=84 and r=104, reading as ripples.
+  </div>
+  <div class="note">
+    Draw it at a fixed 390px width. Never stretch the artwork with <code>preserveAspectRatio="none"</code> —
+    a non-uniform scale turns the arc into an ellipse and the concentricity is lost.
+  </div>
+</div>

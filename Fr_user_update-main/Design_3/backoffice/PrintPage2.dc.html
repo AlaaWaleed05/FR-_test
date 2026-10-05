@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
+    a { color: #3d5f80; }
+    .lat { font-family: "IBM Plex Sans Condensed", system-ui, sans-serif; }
+    .sec { font-size: 14px; font-weight: 600; color: #0b1c47; background: #eef2f7; padding: 5px 10px; border-inline-start: 3px solid #0b1c47; }
+    .f { display: flex; gap: 8px; padding: 5px 10px; border-bottom: 1px solid rgba(11,28,71,0.1); align-items: baseline; }
+    .k { width: 132px; flex-shrink: 0; font-size: 12px; color: rgba(11,28,71,0.72); }
+    .v { font-size: 15px; color: #0b1c47; }
+    .na { font-size: 15px; color: rgba(11,28,71,0.5); }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+    .tag { font-size: 10.5px; border: 1px solid rgba(11,28,71,0.28); padding: 0 5px; color: rgba(11,28,71,0.65); }
+  </style>
+</helmet>
+
+<div dir="rtl" style="width: 794px; height: 1123px; background: #ffffff; color: #0b1c47; display: flex; flex-direction: column; overflow: hidden;">
+
+  <!-- Continuation header: the same identity, a fraction of the ink. -->
+  <div style="padding: 30px 48px 0; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="sfb-logo-circle.png" alt="" style="width: 26px; height: 26px; display: block;">
+        <span style="font-size: 13px; font-weight: 600;">استمارة تحديث البيانات</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px; font-size: 11.5px; color: rgba(11,28,71,0.72);">
+        <span>محمد أحمد الطيب عبدالله</span>
+        <span class="lat" style="color: #0b1c47; font-weight: 600;">FRU-000000999</span>
+      </div>
+    </div>
+    <div style="height: 1px; background: rgba(11,28,71,0.35);"></div>
+    <div style="font-size: 10.5px; color: rgba(11,28,71,0.5); padding-top: 5px;">تابع من الصفحة السابقة</div>
+  </div>
+
+  <div style="flex-grow: 1; padding: 8px 48px 0; display: flex; flex-direction: column; gap: 9px; overflow: hidden;">
+
+
+    <div>
+      <div class="sec">عنوان السكن</div>
+      <div>
+        <!-- Dual-source, and the two shapes genuinely differ: structured vs raw registry text. -->
+        <div class="f">
+          <span class="k">العنوان</span>
+          <span style="display: flex; flex-direction: column; gap: 2px;">
+            <span class="v">السودان، الخرطوم، أم درمان <span class="tag">إدخال العميل</span></span>
+            <span style="font-size: 13px; color: rgba(11,28,71,0.65);">الخرطوم ، محلية تجريبية ، حي تجريبي ، مربع تجريبي <span class="tag">السجل المدني</span></span>
+          </span>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="f"><span class="k">المدينة</span><span class="v">أم درمان</span></div>
+        <div class="f"><span class="k">المنطقة</span><span class="na">غير متاح</span></div>
+        <div class="f"><span class="k">الشارع</span><span class="na">غير متاح</span></div>
+        <div class="f"><span class="k">رقم المنزل</span><span class="na">غير متاح</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">المهنة ومصادر الدخل</div>
+      <div class="grid2">
+        <div class="f"><span class="k">المهنة</span><span class="v">احصائي</span></div>
+        <div class="f"><span class="k">النفقات الشهرية</span><span class="v lat">76,000</span></div>
+        <div class="f"><span class="k">مصدر الدخل</span><span class="v">راتب / أجر (رئيسي)</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec">بيانات الهوية</div>
+      <div class="grid2">
+        <div class="f"><span class="k">نوع الهوية</span><span class="v">جواز سفر</span></div>
+        <div class="f"><span class="k">رقم الهوية</span><span class="v lat">P00000001</span></div>
+        <div class="f"><span class="k">بلد الإصدار</span><span class="v lat">SDN</span></div>
+        <div class="f"><span class="k">مكان الإصدار</span><span class="v">أمدرمان</span></div>
+        <div class="f"><span class="k">تاريخ الإصدار</span><span class="v lat">01/01/2021</span></div>
+        <div class="f"><span class="k">تاريخ الصلاحية</span><span class="v lat">01/01/2031</span></div>
+        <div class="f"><span class="k">تحقق MRZ</span><span class="v">صحيح</span></div>
+        <div class="f"><span class="k">مطابقة الوجه</span><span class="v">مطابق — <span class="lat">5/5</span></span></div>
+      </div>
+    </div>
+
+    <!-- Images: the signature and both portraits. No document scans, deliberately. -->
+    <div>
+      <div class="sec">الصور والتوقيع</div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 12px 10px 0;">
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="height: 128px; border: 1px solid rgba(11,28,71,0.28); background: #eef2f7; display: flex; align-items: center; justify-content: center;">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#5980a6" stroke-width="1.2"><circle cx="12" cy="9" r="3.6" /><path d="M4.5 20c1.6-3.6 4.3-5.4 7.5-5.4s5.9 1.8 7.5 5.4" /></svg>
+          </div>
+          <span style="font-size: 11.5px; color: rgba(11,28,71,0.72);">صورة المستند <span class="tag lat">Uqudo</span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="height: 128px; border: 1px dashed #9c2f2f; background: #fdf2f2; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px;">
+            <span style="font-size: 12px; color: #9c2f2f; line-height: 1.6;">لم ترد صورة<br>من السجل المدني</span>
+          </div>
+          <span style="font-size: 11.5px; color: rgba(11,28,71,0.72);">صورة السجل المدني</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div style="height: 128px; border: 1px solid rgba(11,28,71,0.28); background: #ffffff; display: flex; align-items: center; justify-content: center;">
+            <svg width="120" height="52" viewBox="0 0 86 40" fill="none" stroke="#0b1c47" stroke-width="1.6" stroke-linecap="round"><path d="M6 30c10-2 13-20 19-20s4 20 11 20 9-16 16-16 9 12 22 8" /></svg>
+          </div>
+          <span style="font-size: 11.5px; color: rgba(11,28,71,0.72);">توقيع العميل</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="padding: 0 48px 28px; flex-shrink: 0;">
+    <div style="height: 1px; background: rgba(11,28,71,0.28); margin-bottom: 7px;"></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: rgba(11,28,71,0.65);">
+      <span>إصدارات القوائم المرجعية: المهن <span class="lat">v4</span> · التقسيمات الإدارية <span class="lat">v2</span> · الدول <span class="lat">v1</span> · مصادر الدخل <span class="lat">v3</span> · مستوي التعليم <span class="lat">v2</span> · مصفوفة المصادر <span class="lat">v2</span></span>
+      <span class="lat" style="font-weight: 600; color: #0b1c47;">صفحة 2 من 3</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

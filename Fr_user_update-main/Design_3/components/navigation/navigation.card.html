@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components" viewport="700x260" name="Navigation" subtitle="Stage header, progress, loading rule" -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .lbl { font-family:var(--font-label); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:7px; }
+  .grid { display:grid; gap:18px; }
+  
+</style>
+<div id="root"></div>
+<script type="text/babel">
+const NS = window.SFB_Bayanati || window.SFBBayanati || window.Bayanati || window.BayanatiDesignSystem ||
+    Object.values(window).find(v => v && typeof v === 'object' && v.BrandBar && v.Button) || {};
+
+const { StageHeader, ProgressBar, LoadingRule } = NS;
+function Card() {
+  return (
+    <div dir="rtl" style={{ display:'grid', gridTemplateColumns:'390px 1fr', gap:20 }}>
+      <div style={{ background:'var(--paper)' }}>
+        <StageHeader step={5} title="المهنة والدخل" onBack={()=>{}} onAbandon={()=>{}} />
+      </div>
+      <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+        <div><div className="lbl">TERMINAL — NO STEP</div><div style={{background:'var(--paper)'}}><StageHeader title="تم حفظ البيانات" /></div></div>
+        <div><div className="lbl">PROGRESS 1 / 7 / 13</div><div style={{display:'grid',gap:8}}><ProgressBar step={1} /><ProgressBar step={7} /><ProgressBar step={13} /></div></div>
+        <div><div className="lbl">LOADING RULE</div><LoadingRule /></div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script>

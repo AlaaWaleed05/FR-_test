@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-3e348da5-7c1f-4b5c-8e85-5bb2163c99d5/styles.css">
+<script src="_ds/industry-3e348da5-7c1f-4b5c-8e85-5bb2163c99d5/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#f2f2f3; }
+  a { color:#0b1c47; }
+  a:hover { color:#5980a6; }
+  @keyframes sfb-rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  @keyframes sfb-pearl { from { opacity:0; transform:scale(.94); } to { opacity:1; transform:none; } }
+  @keyframes sfb-halo { 0%,100% { opacity:.42; transform:scale(1); } 50% { opacity:.72; transform:scale(1.06); } }
+  @keyframes sfb-load { 0% { transform:translateX(-100%); } 100% { transform:translateX(0); } }
+  @keyframes sfb-trek { 0% { transform:translateX(190px); opacity:0; } 18% { opacity:1; } 100% { transform:translateX(0); opacity:1; } }
+  @keyframes sfb-bob { 0%,100% { transform:translateY(0) rotate(-.6deg); } 50% { transform:translateY(-5px) rotate(.6deg); } }
+  @keyframes sfb-draw { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  @keyframes sfb-dust { 0% { opacity:0; transform:translateX(10px) scale(.7); } 40% { opacity:.5; } 100% { opacity:0; transform:translateX(46px) scale(1.25); } }
+</style>
+</helmet>
+
+<div style="font-family:var(--font-body, Barlow, sans-serif); padding:40px 24px 64px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:center; gap:56px;">
+
+ <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+  <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:#5980a6;">Splash A — navy · 390 × 844</div>
+
+  <div class="blueprint" style="width:390px;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+    <div style="position:relative; height:844px; background:#0b1c47; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;">
+
+      <div style="position:absolute; inset:0; background:radial-gradient(120% 60% at 50% 34%, rgba(89,128,166,.30) 0%, rgba(11,28,71,0) 62%); pointer-events:none;"></div>
+      <div style="position:absolute; inset:0; opacity:.10; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px); background-size:48px 48px; background-position:center;"></div>
+
+      <div style="position:relative; display:flex; flex-direction:column; align-items:center; margin-top:-52px;">
+        <div style="position:relative; width:168px; height:168px; display:grid; place-items:center;">
+          <div style="position:absolute; width:168px; height:168px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.34) 0%, rgba(255,255,255,0) 68%); animation:sfb-halo 4.2s ease-in-out infinite;"></div>
+          <div style="position:absolute; width:150px; height:150px; border-radius:50%; border:1px solid rgba(255,255,255,.22);"></div>
+          <div style="position:relative; width:118px; height:118px; border-radius:50%; overflow:hidden; background:#fff; animation:sfb-pearl .9s cubic-bezier(.2,.7,.2,1) both;">
+            <img src="assets/sfb-logo-circle.png" alt="Sudanese French Bank" style="width:100%; height:100%; display:block; object-fit:cover;">
+          </div>
+        </div>
+
+        <div style="margin-top:34px; display:flex; flex-direction:column; align-items:center; gap:16px; animation:sfb-rise .9s .18s cubic-bezier(.2,.7,.2,1) both;">
+          <div dir="rtl" lang="ar" style="font-family:Amiri, serif; font-size:62px; line-height:1; color:#ffffff; letter-spacing:.01em;">بيــانــاتــي</div>
+          <div style="width:46px; height:1px; background:rgba(255,255,255,.45);"></div>
+          <div dir="rtl" lang="ar" style="font-family:Amiri, serif; font-size:23px; line-height:1.5; color:rgba(255,255,255,.86);">لؤلؤة المصارف</div>
+        </div>
+      </div>
+
+      <sc-if value="{{ showWordmark }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; left:0; right:0; bottom:76px; display:flex; flex-direction:column; align-items:center; gap:14px; animation:sfb-rise 1s .42s cubic-bezier(.2,.7,.2,1) both;">
+          <img src="assets/sfb-wordmark.png" alt="البنك السوداني الفرنسي — Sudanese French Bank" style="height:38px; width:auto; display:block; opacity:.92;">
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showProgress }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; left:0; right:0; bottom:44px; display:flex; justify-content:center;">
+          <div style="width:120px; height:1.5px; background:rgba(255,255,255,.20); overflow:hidden;">
+            <div style="width:100%; height:100%; background:rgba(255,255,255,.85); animation:sfb-load 2.4s cubic-bezier(.4,0,.2,1) infinite;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+ </div>
+
+ <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+  <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:#5980a6;">Splash B — paper · 390 × 844</div>
+
+  <div class="blueprint" style="width:390px;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+    <div style="position:relative; height:844px; background:#ffffff; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+
+      <div style="position:absolute; inset:0; background:radial-gradient(110% 55% at 50% 38%, rgba(89,128,166,.10) 0%, rgba(255,255,255,0) 64%); pointer-events:none;"></div>
+
+      <div style="position:relative; display:flex; flex-direction:column; align-items:center; margin-top:-64px;">
+        <div style="position:relative; width:132px; height:132px; display:grid; place-items:center; animation:sfb-pearl .9s cubic-bezier(.2,.7,.2,1) both;">
+          <div style="position:absolute; width:132px; height:132px; border-radius:50%; background:radial-gradient(circle, rgba(89,128,166,.22) 0%, rgba(89,128,166,0) 70%); animation:sfb-halo 4.2s ease-in-out infinite;"></div>
+          <div style="position:relative; width:104px; height:104px; border-radius:50%; overflow:hidden; background:#fff;">
+            <img src="assets/sfb-logo-circle.png" alt="Sudanese French Bank" style="width:100%; height:100%; display:block; object-fit:cover;">
+          </div>
+        </div>
+
+        <div style="margin-top:36px; display:flex; flex-direction:column; align-items:center; gap:15px; animation:sfb-rise .9s .18s cubic-bezier(.2,.7,.2,1) both;">
+          <div dir="rtl" lang="ar" style="font-family:Amiri, serif; font-size:62px; line-height:1; color:#0b1c47;">بيــانــاتــي</div>
+          <div style="width:46px; height:1px; background:rgba(11,28,71,.35);"></div>
+          <div dir="rtl" lang="ar" style="font-family:Amiri, serif; font-size:23px; line-height:1.5; color:#0b1c47;">لؤلؤة المصارف</div>
+        </div>
+      </div>
+
+      <sc-if value="{{ showWordmark }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; left:0; right:0; bottom:74px; display:flex; justify-content:center; animation:sfb-rise 1s .42s cubic-bezier(.2,.7,.2,1) both;">
+          <img src="assets/sfb-wordmark-navy.png" alt="البنك السوداني الفرنسي — Sudanese French Bank" style="width:236px; height:auto; display:block;">
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showProgress }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; left:0; right:0; bottom:44px; display:flex; justify-content:center;">
+          <div style="width:120px; height:1.5px; background:rgba(11,28,71,.15); overflow:hidden;">
+            <div style="width:100%; height:100%; background:#0b1c47; animation:sfb-load 2.4s cubic-bezier(.4,0,.2,1) infinite;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+ </div>
+
+ <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+  <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:#5980a6;">Splash C — horizon · 390 × 844</div>
+
+  <div class="blueprint" style="width:390px;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+    <div style="position:relative; height:844px; background:#ffffff; overflow:hidden;">
+
+      <svg viewBox="0 0 390 560" width="390" height="560" preserveAspectRatio="none" style="position:absolute; left:0; top:0; display:block;">
+        <defs>
+          <linearGradient id="sfbSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0b1c47"></stop>
+            <stop offset="62%" stop-color="#0b1c47"></stop>
+            <stop offset="100%" stop-color="#132a5e"></stop>
+          </linearGradient>
+          <radialGradient id="sfbGlow" cx="50%" cy="85%" r="52%">
+            <stop offset="0%" stop-color="#5980a6" stop-opacity=".50"></stop>
+            <stop offset="100%" stop-color="#5980a6" stop-opacity="0"></stop>
+          </radialGradient>
+        </defs>
+        <path d="M0,0 H390 V424 C335,424 274.3,418.4 248.6,449 A70 70 0 0 1 141.4,449 C115.7,418.4 55,424 0,424 Z" fill="url(#sfbSky)"></path>
+        <path d="M0,0 H390 V424 C335,424 274.3,418.4 248.6,449 A70 70 0 0 1 141.4,449 C115.7,418.4 55,424 0,424 Z" fill="url(#sfbGlow)"></path>
+        <path d="M0,442 C52,442 104,430 130.7,458 A84 84 0 0 0 259.3,458 C286,430 338,442 390,442" fill="none" stroke="#5980a6" stroke-opacity=".45" stroke-width="1.2"></path>
+        <path d="M0,458 C48,458 88,442 115.3,470.9 A104 104 0 0 0 274.7,470.9 C301.7,442 342,458 390,458" fill="none" stroke="#5980a6" stroke-opacity=".22" stroke-width="1"></path>
+      </svg>
+
+      <div style="position:absolute; left:0; right:0; top:404px; display:flex; justify-content:center; animation:sfb-trek 1.5s cubic-bezier(.25,.8,.3,1) both;">
+        <div style="position:relative; transform:translateY(-50%); display:grid; place-items:center; width:156px; height:156px;">
+          <div style="position:absolute; width:156px; height:156px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.30) 0%, rgba(255,255,255,0) 68%); animation:sfb-halo 4.2s ease-in-out infinite;"></div>
+          <div style="position:absolute; width:140px; height:140px; border-radius:50%; border:1px solid rgba(89,128,166,.55);"></div>
+          <div style="position:absolute; left:-14px; top:74%; width:16px; height:2px; border-radius:2px; background:rgba(89,128,166,.7); animation:sfb-dust 2.6s 1.4s ease-out infinite;"></div>
+          <div style="position:absolute; left:-4px; top:84%; width:11px; height:2px; border-radius:2px; background:rgba(89,128,166,.55); animation:sfb-dust 2.6s 2s ease-out infinite;"></div>
+          <div style="position:relative; width:112px; height:112px; border-radius:50%; overflow:hidden; background:#fff; animation:sfb-bob 2.1s 1.5s ease-in-out infinite;">
+            <img src="assets/sfb-logo-circle.png" alt="Sudanese French Bank" style="width:100%; height:100%; display:block; object-fit:cover;">
+          </div>
+        </div>
+      </div>
+
+      <div style="position:absolute; left:0; right:0; top:520px; display:flex; flex-direction:column; align-items:center; gap:15px; animation:sfb-rise .9s 1.15s cubic-bezier(.2,.7,.2,1) both;">
+        <div dir="rtl" lang="ar" style="font-family:Amiri, serif; font-size:62px; line-height:1; color:#0b1c47;">بيــانــاتــي</div>
+        <div style="width:46px; height:1px; background:rgba(11,28,71,.35);"></div>
+        <div dir="rtl" lang="ar" style="font-family:Amiri, serif; font-size:23px; line-height:1.5; color:#0b1c47;">لؤلؤة المصارف</div>
+      </div>
+
+      <sc-if value="{{ showWordmark }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; left:0; right:0; bottom:74px; display:flex; justify-content:center; animation:sfb-rise 1s 1.45s cubic-bezier(.2,.7,.2,1) both;">
+          <img src="assets/sfb-wordmark-navy.png" alt="البنك السوداني الفرنسي — Sudanese French Bank" style="width:210px; height:auto; display:block;">
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showProgress }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; left:0; right:0; bottom:44px; display:flex; justify-content:center;">
+          <div style="width:120px; height:1.5px; background:rgba(11,28,71,.15); overflow:hidden;">
+            <div style="width:100%; height:100%; background:#0b1c47; animation:sfb-load 2.4s cubic-bezier(.4,0,.2,1) infinite;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+ </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:470,&quot;height&quot;:980},&quot;showWordmark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Splash&quot;},&quot;showProgress&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Splash&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      showWordmark: this.props.showWordmark ?? true,
+      showProgress: this.props.showProgress ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

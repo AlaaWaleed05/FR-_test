@@ -1,0 +1,691 @@
+# Bayanati — hosting requirements for a bank-operated deployment
+
+| | |
+|---|---|
+| **Document** | AZT-BYN-HOST-02 |
+| **Revision** | 0.2, sizing option C. Design rate 100 submissions per hour, factor of two; capacity in AP-7 measured rather than estimated. Draft for internal review. Not issued |
+| **Date** | 18 September 2026 |
+| **For** | Sudanese French Bank, IT infrastructure and information security |
+| **Issued by** | Az Technology, solution provider |
+| **Subject** | The servers, network provisions and operational duties required to host the Bayanati customer data-update solution on bank infrastructure |
+
+**Scope of this document.** It describes a production deployment on bank infrastructure. It is a
+statement of requirements, not a migration plan and not a commitment to a date. The staging
+environment remains on Az Technology's cloud account and is not covered here. Supersedes
+AZT-BYN-HOST-01.
+
+---
+
+## 1. What is being hosted
+
+| Component | Technology | Deployed shape | Hosted by the bank |
+|---|---|---|---|
+| Backend | Java 21, Spring Boot 4.1.0 | One container image, one long-running process, HTTP on port 8080 | Yes |
+| Back office | React, TypeScript, compiled to static files | A folder of files served by a web server. No server-side runtime | Yes |
+| Database | PostgreSQL 18 | One instance, three schemas: `app`, `audit`, `ref` | Yes |
+| Mobile app | Flutter, Android only | Distributed through Google Play | No |
+
+Three points that shape everything below.
+
+**SC-1.** The backend is the only component that connects to external services. The back office
+connects only to the backend.
+
+**SC-2.** Identity document images are stored inside the database, not in object storage. Every
+storage, backup and encryption provision in this document applies to those images.
+
+**SC-3.** Customer handsets connect directly to Uqudo during document scan and liveness. That
+traffic does not traverse the bank network.
+
+---
+
+## 2. Conceptual diagram
+
+```
+                                  PUBLIC INTERNET
+                                         │
+                       customer handsets │ HTTPS 443
+                                         │
+                              ┌──────────▼───────────┐
+                              │    Bank firewall     │   publishes 443 to SRV-APP only
+                              └──────────┬───────────┘
+                                         │
+ ══════════════════════════════════ BANK NETWORK ══════════════════════════════════
+                                         │
+   ┌─────────────────┐                   │
+   │  Operator PCs   │                   │
+   │  (bank LAN)     │                   │
+   └────────┬────────┘                   │
+            │ HTTPS 443                  │
+            │ (internal hostname)        │
+            │                            │
+   ┌────────▼─────────────────┐          │
+   │  SRV-WEB                 │          │
+   │  Back-office server      │          │
+   │  nginx + static files    │          │
+   │  NOT internet-reachable  │          │
+   └────────┬─────────────────┘          │
+            │                            │
+            │  HTTP 8080                 │
+            │  (operator API paths)      │
+            │                            │
+            │      ┌─────────────────────▼──────────────────┐
+            └─────▶│  SRV-APP                               │
+                   │  Application server                    │        outbound only
+                   │  nginx front door + backend container  ├──────▶ core banking   :9494
+                   │  + scheduled jobs                      ├──────▶ Civil Registry :5353
+                   └──────────────────┬─────────────────────┘──────▶ Uqudo          :443
+                                      │                     └──────▶ SMS gateway    :443
+                                      │ TCP 5432
+                                      │
+                   ┌──────────────────▼─────────────────────┐
+                   │  SRV-DB                                │
+                   │  PostgreSQL 18                         │
+                   │  reachable only from SRV-APP           │
+                   └────────────────────────────────────────┘
+```
+
+Reading the diagram:
+
+- Only SRV-APP is published to the internet, and only on port 443.
+- SRV-WEB is reachable from the bank LAN only. It serves the operator interface.
+- SRV-DB accepts connections from SRV-APP and from nothing else.
+- Every arrow leaving SRV-APP to an external service is outbound only. None of those services
+  initiates a connection into the bank.
+
+---
+
+## 3. Server inventory
+
+Three servers. Physical or virtual, the requirements are the same.
+
+| Ref | Server | Zone | Purpose |
+|---|---|---|---|
+| SRV-APP | Application server | Bank network, published to the internet through the firewall on 443 | Serves the customer mobile API. Runs the backend and the scheduled jobs |
+| SRV-WEB | Back-office server | Bank network, internal only | Serves the operator interface to bank staff |
+| SRV-DB | Database server | Bank network, restricted segment | PostgreSQL |
+
+### 3.1 Sizing basis and safety factor
+
+Every hardware figure in sections 4, 5 and 6 is stated three ways: the **actual need**, which is
+either measured on the proven deployment or calculated from the capacity basis in 6.2; the **factor**
+applied to it; and the figure Az Technology asks the bank to **provision**. Nothing is asked for
+without the arithmetic behind it being visible.
+
+**A factor of two is applied to every figure**, with no exceptions and no per-resource
+judgement. The margin exists for three reasons:
+
+1. The data grows monotonically for the life of the campaign. The system is sized for its end
+   state, not its opening week.
+2. Load is not evenly distributed. The bank will send SMS campaign invitations in batches, and each
+   batch produces a burst of customers arriving together. Average figures do not describe that day.
+3. Resizing a server after deployment is a change request, an outage window and an approval cycle in
+   a bank. Storage encryption in particular is configured when a volume is created and is not
+   practically retrofitted to a volume holding hundreds of gigabytes of identity documents.
+
+**One caveat, stated plainly because it affects how much weight these numbers carry.** The
+proven deployment runs at about three submissions per hour, which leaves it close to idle. Its
+resource consumption is therefore evidence that the software runs, not a measurement of its
+throughput, and it cannot be scaled up by arithmetic. The actual-need figures for the design rate in
+this document are **calculated from the work each submission performs**, not measured at that rate.
+Az Technology recommends a load test at the design rate before go-live, and will treat any correction
+it produces as a revision to this document rather than a change request.
+
+Nothing in sections 4, 5 and 6 is sized for growth beyond the campaign described in 6.2. If the bank
+later extends the solution to other customer populations, the database figures are the ones to
+revisit first.
+
+---
+
+## 4. SRV-APP, the application server
+
+### 4.1 Hardware
+
+| Resource | Actual need at 100/hour | Factor | **Provision this** |
+|---|---|---|---|
+| vCPU | 2, calculated | ×2 | **4** |
+| RAM | 4 GB, calculated | ×2 | **8 GB** |
+| Disk | 40 GB, calculated | ×2 | **80 GB** |
+| Disk type | SSD | | **SSD** |
+
+At 100 submissions per hour one customer arrives every 36 seconds, and a journey spans several
+minutes, so roughly 20 to 30 customers are part-way through one at any moment. Each completed
+journey moves about 4.8 MB of document images through the application and into the database.
+
+How the three figures are arrived at:
+
+- **2 vCPU.** The work per submission is image handling, signature verification of the scan result
+  and database writes. None of it is long-running, and at this rate it does not saturate a single
+  core. The second core covers garbage collection and the printed customer form, which operators
+  render in parallel with customer traffic and which is the most processor-intensive thing the
+  application does.
+- **4 GB.** The JVM is capped at 75% of the memory limit, so 4 GB yields a 3 GB heap. Concurrent
+  image handling and form rendering are what consume it.
+- **40 GB.** The operating system, two or three retained container images at about 250 MB each, and
+  roughly a year of application logs at this request rate.
+
+**x86-64 architecture.** The container image is built and tested for x86-64. ARM is not tested. No
+customer data is stored on this server.
+
+### 4.2 Operating system and software
+
+| Item | Requirement |
+|---|---|
+| Operating system | A current, supported 64-bit Linux distribution. Red Hat Enterprise Linux 9, Rocky Linux 9, Oracle Linux 9 and Ubuntu 22.04 LTS or later are all suitable. The bank's standard build is acceptable |
+| Container runtime | Docker Engine 24 or later, or Podman 4 or later. **AP-1** |
+| Web server | nginx 1.24 or later. **AP-2** |
+| PostgreSQL client | `postgresql-client` version 18, providing `psql`. Required by the scheduled jobs in section 9 |
+| Scheduler | `cron`, or a systemd timer facility |
+| Certificate store | The distribution's `ca-certificates` package, kept current |
+| Java | **Not required on the host.** A Java 21 runtime ships inside the container image (`eclipse-temurin:21-jre-alpine`), which runs as a non-root user and exposes port 8080 |
+
+**AP-1.** The application is delivered as a container image. If the bank cannot run containers, the
+plain jar runs under systemd with a Java 21 runtime installed on the host, but two settings that are
+properties of the shipped image rather than of the application must then be supplied explicitly:
+the database TLS mode and the database CA bundle path (see NW-9). The container is the supported
+shape. The bank must also state how the image will reach it: a registry it can pull from, or an
+offline image archive loaded by hand.
+
+**AP-2.** nginx sits in front of the application on this server and does four jobs: it terminates
+HTTPS, it forwards `/api` to the application on port 8080, it rejects malformed requests before they
+reach the application, and it refuses the operator paths `/api/v1/auth`, `/api/v1/operator` and
+`/api/v1/admin` on the public hostname. Az Technology supplies the configuration file.
+
+### 4.3 Runtime characteristics the bank should know
+
+**AP-3. One instance only.** The operator session is held in the application's own memory. There is
+no external session store. Running two instances without session affinity signs operators out at
+random.
+
+At the design rate this constraint deserves stating in operational terms: roughly 20 to 30 customers
+are part-way through a journey at any moment, and there is no second instance to absorb a restart of
+this one. Customer progress is persisted, so an interrupted customer can resume rather than start
+again, but the interruption is real. Restarts and patching belong in a maintenance window.
+
+**AP-4. The process is never idle.** An internal dispatcher polls the outbound message queue every
+30 seconds for the life of the process. Any platform that suspends an idle process is unsuitable.
+
+**AP-5. Autoscaling is not required.** Sections 4.1 and 6.1 are sized for a design rate of 100
+customer submissions per hour with a factor of two. The measured capability in AP-7 is well above
+that, and the limit is not the server: adding processor or memory beyond section 4.1 would not raise
+it. Load above the design rate would follow an SMS campaign batch sent by the bank. That is a
+scheduled event, so the response is to plan batch sizes against the declared rate in AP-7 rather
+than to react to the consequences of one.
+
+**AP-6. Health check.** `GET /actuator/health` returns the service state and is the endpoint a load
+balancer or monitoring system should poll. It reports DOWN when the database is unreachable, which
+is intended.
+
+**AP-7. Concurrent capacity.** At the design rate, 20 to 30 customers are part-way through a
+journey at any moment. Most of that time is the customer reading, typing or scanning rather than the
+server working, so the application sees roughly one request per second, and perhaps five at a peak.
+
+**What "capacity" means here, because the distinction decides who can change it.** Two different
+figures are given below, and they are different in kind.
+
+The first is the **capability of the application itself**: the rate at which it accepts, stores,
+audits and hands on a completed submission, measured with every externally contracted service
+treated as an input rather than as part of the system. Az Technology is accountable for this number.
+
+The second is the **end-to-end rate the bank will observe**, which adds the response time of the
+services the bank contracts directly — above all the SMS gateway. That number is not ours to
+improve without the bank's suppliers.
+
+Both figures below are measured, not estimated. The measurement is repeatable on demand: it is a
+single command in the delivered source, and re-running it is how any future change to these numbers
+should be checked.
+
+**1. The application's own capability: at least 5,000 submissions per hour.**
+
+| Resource | Utilisation at 5,000 submissions per hour |
+|---|---|
+| Database connections (20 provisioned) | Under 1% — one submission's 4.8 MB of document images holds a connection for about 0.12 seconds |
+| Application worker threads (100 provisioned) | About 13 requests per second |
+| Outbound dispatch, excluding the gateway | About 16 milliseconds of the application's own work per message |
+
+**This figure can be raised by configuration, not by hardware.** The application dispatches
+outbound messages in batches on a timer; both the batch size and the timer are settings, and
+widening them takes the same measurement above 14,000 submissions per hour on the same server.
+Nothing in section 4.1 would need to change. We have not raised them, because the figure is already
+far beyond the design rate and beyond the end-to-end limit below, and an unused margin is not worth
+the risk of changing a setting nobody has needed.
+
+**2. The binding constraint is the SMS gateway, and it belongs to the bank's contract.**
+
+Every completed submission sends two SMS messages — a submission confirmation and a message on the
+review decision — and one more at the start for the one-time code. The application sends them one
+after another, so the end-to-end rate is governed by how quickly the gateway answers.
+
+No per-message response time is published by the gateway operator, and no service level covering
+throughput exists in anything supplied to us (BR-13 asks the bank for both and is unanswered). In
+its absence we measured it: two live sends through the contracted gateway to a Sudanese handset took
+**1.97 and 2.14 seconds**. At that response time the end-to-end rate is about **820 submissions per
+hour**.
+
+**3. Declared capability: 500 submissions per hour.**
+
+That is the figure Az Technology will stand behind, and it is deliberately below the 820 measured.
+The margin covers the two things the measurement cannot settle: only two live sends exist, both
+taken at low load, and nobody has told us what the gateway does when several are in flight at once.
+500 submissions per hour is five times the design rate in section 4.1.
+
+**What would raise it, in order of cost.** Sending messages to the gateway concurrently instead of
+one at a time would take the end-to-end figure to roughly 1,700 per hour. The application is already
+built so this is a configuration-scale change rather than a redesign, and it is deliberately not
+enabled: sending several requests at once to an account whose rate limit nobody has published is how
+an account gets throttled, and a throttled SMS route stops one-time codes for every customer. The
+three questions in BR-13 are what unblocks it.
+
+**One consequence the bank should take from this.** Every limit above belongs to the application's
+configuration or to the bank's own gateway contract — none of them to the server. Allocating more
+processor or memory than section 4.1 asks for would not raise any of these numbers.
+
+---
+
+## 5. SRV-WEB, the back-office server
+
+### 5.1 Hardware
+
+| Resource | Actual need at 100/hour | Factor | **Provision this** |
+|---|---|---|---|
+| vCPU | 1, the smallest allocatable unit | ×2 | **2** |
+| RAM | 2 GB, calculated | ×2 | **4 GB** |
+| Disk | 20 GB, calculated | ×2 | **40 GB** |
+
+This server holds no data and runs no application. It serves 1.7 MB of static files and forwards
+operator API traffic to SRV-APP.
+
+The design rate does reach this server, but indirectly: 100 submissions an hour arriving for review
+means more operators signed in at once, not more work per operator. Even so, serving static files and
+proxying their API calls does not need a whole processor core. The actual-need figures are therefore
+what the operating system, nginx, the bank's monitoring and endpoint-protection agents and log
+retention require, and 1 vCPU is stated because it is the smallest unit that can be allocated rather
+than because the work demands it.
+
+### 5.2 Operating system and software
+
+| Item | Requirement |
+|---|---|
+| Operating system | As SRV-APP. The bank's standard Linux build |
+| Web server | nginx 1.24 or later |
+| Node.js | **Not required.** The operator interface is compiled to plain files before delivery. No JavaScript runtime is installed on this server |
+
+### 5.3 What it must do
+
+**WB-1.** Serve the static files at `/` on an internal hostname, over HTTPS.
+
+**WB-2.** Forward `/api` from that same hostname to SRV-APP on port 8080. This is a requirement, not
+a deployment preference. The operator interface requests the relative path `/api/v1/...` and has no
+configurable backend address, and the backend publishes no cross-origin policy. Serving the files
+from one hostname and the API from another stops the back office working, and no setting corrects
+it.
+
+**WB-3.** Return `/index.html` with HTTP 200 for unknown paths under `/`, so that an operator
+refreshing a deep link does not receive an error. This rewrite must apply to the static paths only
+and must never apply to `/api`, where a genuine 404 from the backend has to reach the browser
+unchanged.
+
+**WB-4.** Not be reachable from the public internet, by any address.
+
+Az Technology supplies the nginx configuration satisfying WB-1 to WB-3.
+
+---
+
+## 6. SRV-DB, the database server
+
+### 6.1 Hardware
+
+| Resource | Actual need at 100/hour | Factor | **Provision this** |
+|---|---|---|---|
+| vCPU | 2, calculated | ×2 | **4** |
+| RAM | 8 GB, calculated | ×2 | **16 GB** |
+| Data volume | 1 TB, calculated | ×2 | **2 TB SSD, encrypted** |
+
+**The data volume is the one figure the design rate does not change.** Storage is set by the number
+of customer accounts, not by how quickly they arrive. Raising the rate shortens the campaign; it does
+not enlarge the database. The 1 TB of actual need is the 350 to 500 GB of live data at the end of the
+campaign plus local backup copies of a database in which every row carries identity document images.
+
+The factor of two matters more here than anywhere else in this document, for a reason that is not
+about capacity: this volume cannot be practically resized afterwards. Encryption is configured when
+the volume is created, and re-creating it means moving hundreds of gigabytes of identity documents
+under a maintenance window.
+
+At 100 submissions an hour the database absorbs about 480 MB per hour, roughly 140 KB per second
+sustained, in bursts of several megabytes as each submission completes. That is not a demanding write
+load and the workload is not processor-bound. The memory is sized so that PostgreSQL's buffers and
+the operating system's file cache hold the working set of a store whose bulk is large image values
+that are written once and read rarely.
+
+**DB-1.** General-purpose SSD. Magnetic storage is not suitable.
+
+**DB-2.** Provision the full data volume at the outset rather than growing into it. The workload is
+throughput-modest but write-heavy per transaction: at the design rate, about 100 submissions an hour,
+each carrying several megabytes of document images, for a sustained 140 KB per second. General-purpose
+SSD absorbs that comfortably. What it must not be is a volume that has to be extended mid-campaign.
+
+**DB-3.** If the bank's virtualisation platform offers burstable or CPU-credit instance classes, do
+not use one. Load at the design rate is concentrated into the hours the bank runs the campaign and
+falls to near nothing outside them. A credit-based class accumulates credit during the quiet hours
+and would exhaust it during the busy ones, which is precisely the wrong way round. The failure is
+also invisible until it happens, because nothing reports a credit balance unless somebody is watching
+for it.
+
+### 6.2 Capacity basis
+
+| Parameter | Value |
+|---|---|
+| Campaign size | About 100,000 customer accounts, one submission each |
+| **Design submission rate** | **100 submissions per hour** |
+| **Declared capability** | **500 submissions per hour** (AP-7; measured end-to-end figure about 820, application alone above 5,000) |
+| Campaign duration at that rate | About 1,000 operating hours |
+| Data per completed profile | About 4.8 MB, including identity document images |
+| Sustained write throughput | About 480 MB per hour, roughly 140 KB per second |
+| Live data at full campaign | 350 to 500 GB |
+| Working storage required, including local backup copies | About 1 TB |
+| **Storage to provision** | **2 TB** |
+| Audit rows | 6 to 10 million |
+| Table partitioning | Not required |
+
+The design rate is stated as a requirement rather than derived from the campaign length. It is what
+sections 4 and 6 are sized against. Two consequences worth separating, because they are commonly
+conflated: the rate determines **processor, memory and message throughput**, and the number of
+accounts determines **storage**. Raising the rate again would not require a larger database volume.
+
+### 6.3 Platform requirements
+
+These three are not preferences. The system does not work correctly without them.
+
+| Ref | Requirement | Consequence if not met |
+|---|---|---|
+| **DB-4** | **PostgreSQL 18.** | Porting to SQL Server is estimated at one to two weeks of work, to Oracle two to three weeks. If the bank has a mandated database standard other than PostgreSQL, Az Technology needs to know before this document is accepted |
+| **DB-5** | **A database account that can execute `CREATE EVENT TRIGGER`** at deployment time. On self-managed PostgreSQL this means a genuine superuser. PostgreSQL enforces it in the engine and no `GRANT` delegates it | This installs the third layer of the audit tamper-protection. Without it the migrations still succeed, the application still starts, nothing reports an error, and changes to the audit schema are unguarded |
+| **DB-6** | **An ICU-enabled PostgreSQL build**, UTF8 encoding, with the `ar-x-icu` collation present | Arabic sort order. Without ICU, reference lists and customer names sort incorrectly and nothing fails visibly |
+
+The database is created explicitly rather than using the platform's default database:
+
+```sql
+CREATE DATABASE fru TEMPLATE template0 ENCODING UTF8
+  LOCALE_PROVIDER icu ICU_LOCALE 'ar';
+```
+
+Acceptance check before the instance is handed over. Expected result: one row.
+
+```sql
+SELECT collname FROM pg_collation WHERE collname = 'ar-x-icu';
+```
+
+### 6.4 Database accounts
+
+Four separate accounts. The separation is a security control: the running application holds no
+schema-change rights at all, so a compromised application process cannot alter the schema or the
+audit trail.
+
+| Account | Rights | Used by |
+|---|---|---|
+| Bootstrap superuser | Creates `fru_migrator`, transfers database ownership, installs the audit event trigger | Deployment only. Never the application |
+| `fru_migrator` | Owns the database and every schema | The schema migration step only |
+| `fru_app` | Owns nothing, holds no schema-change rights. Read and write on `app`, mostly read-only on `ref`, and on `audit` insert and select only, so it can never amend or delete an audit record | The running application. The only database credential in the application's configuration |
+| `fru_sealer` | The audit seal tables only | The scheduled seal job only. Never the application |
+
+**DB-7.** Schema migration runs as a separate deployment step under a separate identity. The
+application does not migrate at startup and refuses schema changes by design.
+
+### 6.5 Storage encryption
+
+| Ref | Requirement |
+|---|---|
+| **EN-1** | Encryption at rest at disk or volume level, covering the entire database volume. LUKS or dm-crypt, hypervisor volume encryption, or SAN encryption are all acceptable. Column-level encryption is not what is being asked for |
+| **EN-2** | Backups are encrypted to the same standard. Because document images are held in the database, every backup is a complete copy of every scanned passport and national ID. An encrypted volume with unencrypted dumps beside it defeats EN-1 |
+| **EN-3** | Volume encryption is configured when the volume is created. There is no inexpensive retrofit on a 500 GB database full of identity documents |
+| **EN-4** | The encryption key is one the bank controls, can audit and can revoke |
+
+---
+
+## 7. Network
+
+### 7.1 Firewall rules
+
+| Ref | Direction | Source | Destination | Port | Purpose |
+|---|---|---|---|---|---|
+| FW-1 | Inbound | Public internet | SRV-APP | 443 | Customer mobile app |
+| FW-2 | Inbound | Bank LAN, operator subnets | SRV-WEB | 443 | Operator interface |
+| FW-3 | Internal | SRV-WEB | SRV-APP | 8080 | Operator API traffic |
+| FW-4 | Internal | SRV-APP | SRV-DB | 5432 | Database. **From SRV-APP only** |
+| FW-5 | Outbound | SRV-APP | Core banking middleware, one host | 9494 | `CheckAccount` eligibility lookup |
+| FW-6 | Outbound | SRV-APP | Civil Registry, one host | 5353 | `GetCRSData` national number lookup |
+| FW-7 | Outbound | SRV-APP | `auth.uqudo.io`, `id.uqudo.io` | 443 | Scan token issuance, result retrieval, signature verification keys |
+| FW-8 | Outbound | SRV-APP | SMS gateway, `www.airtel.sd` | 443 | Customer one-time codes and status messages |
+
+**NW-1. Deny everything else outbound from SRV-APP**, including the rest of the bank's internal
+network. This single rule matters more than the arrangement of the servers. SRV-APP accepts traffic
+from the internet and also holds a route to core banking. That combination is unavoidable in any
+mobile banking application, because something has to be on both sides. What limits the consequence
+is that the route leads to exactly one endpoint on one port and nowhere else.
+
+**NW-2. Two destinations are on non-standard ports.** A default-deny egress policy blocks 9494 and
+5353 with no error raised at the application, and the resulting failure looks like the bank's own
+service being unavailable rather than a firewall rule.
+
+**NW-3. SRV-DB must not be reachable from the public internet**, and must not accept connections
+from SRV-WEB or from operator workstations.
+
+**NW-4. Outbound internet access must be direct.** The application connects to Uqudo and the SMS
+gateway without an intermediate proxy and does not read proxy settings from its environment. If the
+bank requires outbound traffic to pass through a forward proxy, Az Technology must be told before
+deployment: it is a change to the application, not a configuration setting. See BR-4.
+
+**NW-2A. Outbound message throughput.** The release version sends on one channel, SMS. A customer
+receives **three messages**: a one-time code at the start, a confirmation when the profile is
+submitted, and one when it is approved or rejected. A customer who asks for the code to be resent,
+or whose profile is rejected and resubmitted, receives more.
+
+At the design rate that is **about 300 messages per hour**, and in the region of 300,000 across the
+campaign. The SMS contract should be sized against those figures rather than against an average, and
+with headroom for resends.
+
+**An earlier draft of this section said five messages per customer and 500,000 across the campaign.
+That was wrong** — it counted a one-time code on each of three channels, where only SMS is offered.
+The corrected figure is materially lower, and the correction is stated rather than made silently
+because the number sizes a purchase.
+
+A gateway that throttles at this rate does not fail loudly; it delays one-time codes, and a delayed
+one-time code is an abandoned customer. That is why BR-13 asks for the rate limit as well as the
+response time.
+
+### 7.2 Hostnames and certificates
+
+| Ref | Requirement |
+|---|---|
+| **NW-5** | A permanent, bank-owned public DNS name for SRV-APP, with a publicly trusted TLS certificate, reachable from Sudanese mobile networks |
+| **NW-6** | **The public DNS name must be fixed before the first Google Play release.** The mobile app compiles its API address at build time. Changing it afterwards is a new app store submission and a forced update for every customer who has already installed the app. It is not a configuration change |
+| **NW-7** | A published privacy policy at a public URL on that domain, required for Google Play submission |
+| **NW-8** | An internal DNS name for SRV-WEB, with a certificate that the bank's managed workstations trust. The bank's own certificate authority is sufficient here, because only bank staff reach this name |
+
+### 7.3 Transport security
+
+**NW-9. Application to database.** The connection runs with `sslmode=verify-full`, which encrypts
+the connection and validates the certificate chain and hostname. The certificate bundle inside the
+shipped image is a cloud provider's and will not validate a bank-operated PostgreSQL certificate.
+The bank supplies a server certificate for SRV-DB and its issuing CA bundle, mounts that bundle into
+the container, and sets `DB_CA_BUNDLE` to its path. No rebuild is required.
+
+**NW-10. Application to core banking and the Civil Registry.** Both endpoints are HTTPS. The
+application validates their certificates against the standard public trust store. If those
+certificates are issued by the bank's own certificate authority, the bank must supply that CA bundle
+as well, or the connections will fail at handshake. This is a separate bundle from NW-9. See BR-5.
+
+**NW-11. Forwarded headers.** Where HTTPS terminates at nginx in front of the application, nginx
+must set `X-Forwarded-Proto` and `X-Forwarded-Host`, and the deployment must enable the
+corresponding application setting. Without it the operator session cookie and the request forgery
+token are issued without the `Secure` attribute, and nothing warns you. If the bank places a further
+terminating device in front of nginx, the cookie attributes must be stated outright in the
+deployment configuration rather than inferred from headers. Verify the `Set-Cookie` headers after a
+real sign-in through the completed path.
+
+---
+
+## 8. Secrets
+
+Eight credentials are held outside the source repository and outside the container image, in the
+bank's secret store (HashiCorp Vault, an equivalent product, or at minimum a root-owned file outside
+the deployment artifact), and injected at the point of use.
+
+| Ref | Secret | Injected into |
+|---|---|---|
+| SE-1 | Database bootstrap and master password | Deployment and post-migration steps only. Never the application. The most privileged credential in the system |
+| SE-2 | `fru_migrator` password | The migration step only |
+| SE-3 | `fru_app` password | The application |
+| SE-4 | `fru_sealer` password | The scheduled seal job only |
+| SE-5 | Uqudo client id | The application |
+| SE-6 | Uqudo client secret | The application |
+| SE-7 | SMS gateway username | The application |
+| SE-8 | SMS gateway password | The application |
+
+**SE-9.** Endpoint addresses, the Uqudo tenant identifier and the live-versus-test selectors are
+configuration rather than secrets. They are injected at runtime and never built into the image. The
+same image runs in every environment and only the configuration differs.
+
+**SE-10.** No item above may appear in a build artifact, a log file, or a configuration file
+committed to any repository.
+
+---
+
+## 9. Scheduled jobs
+
+The bank provides a scheduled-task facility on SRV-APP. **None of these jobs is started by the
+application.** Each fails by simply never running, with no error anywhere.
+
+| Ref | Job | Runs as | Cadence | If it never runs |
+|---|---|---|---|---|
+| JB-1 | `SELECT audit.seal_create();` | `fru_sealer` | Daily | The audit tamper-evidence chain never advances. The protection the design promises is never produced |
+| JB-2 | `SELECT app.purge_abandoned_artifacts();` | `fru_migrator` | Daily | Abandoned customers' document images are never deleted. A retention breach that grows daily |
+| JB-3 | Export the audit seal to the storage in section 10 | See section 10 | Daily, after JB-1 | The seal exists only inside the database it is meant to police |
+
+**JB-4.** Overlapping runs are safe, but the schedule should not deliberately overlap them.
+
+**JB-5. A scope limit on JB-2, recorded so that it is not entered in the bank's data protection
+register as more than it is.** `app.purge_abandoned_artifacts()` clears the stored image bodies of
+profiles marked abandoned for more than 90 days. It does not clear the remainder of the personal
+data, and at present no component marks a profile as abandoned. The job will purge zero rows until
+Az Technology delivers that step. Scheduling it from the start is correct and costs nothing, but on
+its own it does not discharge the 90-day retention commitment.
+
+---
+
+## 10. Audit seal storage
+
+The system maintains a cryptographic hash chain over its audit trail and periodically produces a
+seal over that chain. The seal exists to detect someone rewriting the audit trail.
+
+**AS-1.** The seal must be written to storage that is not under the same administrative control as
+the database. A seal copied to a share protected by the same credentials that protect the database
+is protected by the credential it exists to police.
+
+**AS-2.** Acceptable destinations:
+
+- A write-once storage appliance or backup target operated by a different administrative team from
+  the team operating SRV-DB.
+- Object storage with an immutability lock in a mode where no administrator, including the
+  platform's most privileged account, can shorten a retention period, held in a separate account
+  from the one running the application.
+
+A lock that a sufficiently privileged administrator can override does not satisfy AS-1.
+
+---
+
+## 11. Deployment steps, per environment
+
+Required in order, after the schema migration, on every environment. All three complete silently if
+omitted.
+
+**DP-1. Install the audit event trigger** (`db/post-migrate/01-audit-event-trigger.sql`) as the
+superuser, then verify. **Expected result: exactly two rows.** Zero rows means the third audit layer
+is absent. This check belongs in the deployment runbook as a gate.
+
+```sql
+SELECT evtname, evtevent, evtenabled
+  FROM pg_event_trigger
+ WHERE evtname LIKE '%audit%';
+```
+
+**DP-2. Publish the reference documents.** This populates the occupation, branch, administrative
+division and income source lists that the mobile app downloads. A runner inside the application jar.
+
+**DP-3. Create the first administrator account.** A command-line runner in the same jar. Every later
+operator account is created the same way until the administration screens are delivered.
+
+**DP-4.** The application refuses to start if any live-versus-test selector is unset or misspelt.
+That is deliberate: the backend must never check a real customer's account against a test service
+because a configuration key was mistyped. A startup failure naming the missing property is the
+system working as designed.
+
+---
+
+## 12. Backup and recovery
+
+**BK-1.** Daily backups of SRV-DB, encrypted to EN-2, with point-in-time recovery enabled.
+
+**BK-2. Restore testing, quarterly.** A restore must reproduce the protections, not only the rows. A
+restore that loses the audit event trigger reports success while having silently lost an enforcement
+layer. The drill re-runs the DP-1 verification and the account checks of 6.4 against the restored
+instance, not only against the original.
+
+**BK-3.** SRV-APP and SRV-WEB hold no customer data and do not require data backup. Both are rebuilt
+from the container image, the static files and their configuration.
+
+**BK-4.** The target recovery point and recovery time are a bank decision and are not assumed here.
+See BR-2. Until they are stated, this document specifies a single database instance with tested
+backups. A standby instance, if the bank's recovery target requires one, is a fourth server and a
+replication design.
+
+---
+
+## 13. Ongoing operational duties
+
+| Ref | Duty | Frequency |
+|---|---|---|
+| OP-1 | Operating system and PostgreSQL patching on all three servers | Ongoing |
+| OP-2 | Rebuilding the container base image for published vulnerabilities. Container hosting removes the host operating system from this list. It does not remove the operating system inside the image | Quarterly, or on advisory |
+| OP-3 | Database backups, point-in-time recovery, storage growth | Continuous |
+| OP-4 | Restore testing per BK-2 | Quarterly |
+| OP-5 | Reinstalling the audit event trigger around every major PostgreSQL upgrade, then running the DP-1 verification as the gate. Major version upgrades commonly require event triggers to be dropped first, and they do not return afterwards | Every major upgrade |
+| OP-6 | The three scheduled jobs of section 9 | Daily |
+| OP-7 | The deployment steps of section 11, on every new environment | Per environment |
+| OP-8 | TLS certificate renewal on both hostnames | Annual, or automatic |
+| OP-9 | Secret rotation | Per bank policy |
+| OP-10 | Disk space and database connection monitoring | Continuous |
+
+---
+
+## 14. What the bank supplies or decides
+
+| Ref | Item | Type | Blocks |
+|---|---|---|---|
+| BR-1 | A bank-owned public domain name with a publicly trusted TLS certificate, and an internal name for the back office | Supply | NW-5, NW-6, NW-8. The public name is permanent once the mobile app ships |
+| BR-2 | The target recovery point and recovery time | Decide | Section 12. Decides whether a standby database server is required |
+| BR-3 | Confirmation of the regulatory and data residency position on holding customer personal data and identity document images at the intended location | Decide | Any real customer data reaching the platform. A legal question Az Technology is not positioned to answer |
+| BR-4 | Whether outbound internet traffic must pass through a forward proxy | Decide | NW-4. If it must, this is a change to the application and must be known before deployment |
+| BR-5 | Whether the core banking middleware and Civil Registry certificates are issued by the bank's own certificate authority, and if so their CA bundle | Supply | NW-10 |
+| BR-6 | A PostgreSQL server certificate for SRV-DB and its CA bundle | Supply | NW-9 |
+| BR-7 | A database superuser at deployment time | Supply | DB-5 |
+| BR-8 | Confirmation that the database platform standard permits PostgreSQL 18 | Decide | DB-4. A different mandate is one to three weeks of porting work |
+| BR-9 | The separate administrative domain for the audit seal | Supply | Section 10 |
+| BR-10 | Inbound firewall path and published address for SRV-APP | Supply | FW-1. Usually the longest lead time on this list |
+| BR-11 | A published privacy policy URL | Supply | NW-7. Google Play submission |
+| BR-12 | How the container image reaches the bank: a registry to pull from, or an offline archive | Decide | AP-1 |
+| BR-13 | The SMS gateway's per-message response time, the maximum sending rate on the bank's account, and how many requests may be in flight at once | Supply | **NW-2A, AP-7. This is the single input that sets the end-to-end capacity in AP-7.** We have measured the response time ourselves over two sends; the rate limit and the concurrency allowance are unpublished and only the operator can answer them |
+
+---
+
+## 15. Scope boundary
+
+Stated plainly so that no perimeter control is recorded as closing an application-level gap.
+
+The hosting platform contributes transport security, network isolation, rate limiting and, if the
+bank wishes, a web application firewall. Those controls raise an attacker's cost. They do not
+authenticate individual customers on the customer-facing API, because a request from a customer
+retrieving their own record and a request from someone retrieving another person's record are
+identical on the wire. Access to a stored document image is currently protected by the fact that the
+profile identifier is a long random value that is not published. Az Technology records this here as
+a known property of the current release rather than something the bank's infrastructure is being
+asked to solve.

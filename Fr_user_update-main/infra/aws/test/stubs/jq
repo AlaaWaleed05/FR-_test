@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Stub jq for infra/aws/test/run-gate-tests.sh -- only the two filters 04-db-gates.sh uses.
+IN=$(cat)
+case "$*" in
+  *.username*) printf '%s\n' "$IN" | sed -n 's/.*"username":"\([^"]*\)".*/\1/p' ;;
+  *.password*) printf '%s\n' "$IN" | sed -n 's/.*"password":"\([^"]*\)".*/\1/p' ;;
+esac
+exit 0

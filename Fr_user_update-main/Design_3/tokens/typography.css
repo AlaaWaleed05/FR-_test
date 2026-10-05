@@ -1,0 +1,38 @@
+:root {
+  /* Families. Arabic is the primary script; Latin families are for labels and numerals. */
+  /* Splash only. Arabic only — never set a Latin word in Amiri. */
+  --font-display: "Amiri", "Times New Roman", serif;
+  /* Everything else, both scripts. */
+  --font-body: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  /* Latin labels and step counters. Same superfamily as --font-body. */
+  --font-label: "IBM Plex Sans Condensed", system-ui, sans-serif;
+
+  /* Scale */
+  --size-display: 58px;
+  --size-display-sm: 30px;
+  --size-title: 26px;
+  --size-screen-title: 20px;
+  --size-section: 19px;
+  --size-lead: 17px;
+  --size-body: 16px;
+  --size-helper: 14px;
+  --size-caption: 13px;
+  --size-label: 12px;
+
+  --line-tight: 1.3;
+  --line-body: 1.6;
+  --line-prose: 1.7;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Arabic must never carry positive tracking — it breaks the joins.
+     The one exception is the Latin label style. */
+  --tracking-arabic: 0;
+  --tracking-label: 0.14em;
+
+  /* Floors, enforced. Body never below 16, helper never below 14. */
+  --size-body-min: 16px;
+  --size-helper-min: 14px;
+}

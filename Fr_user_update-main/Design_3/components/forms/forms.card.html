@@ -1,0 +1,38 @@
+<!-- @dsCard group="Components" viewport="700x420" name="Forms" subtitle="Field states, picker, phone, OTP, choices" -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .lbl { font-family:var(--font-label); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:7px; }
+  .grid { display:grid; gap:18px; }
+  
+</style>
+<div id="root"></div>
+<script type="text/babel">
+const NS = window.SFB_Bayanati || window.SFBBayanati || window.Bayanati || window.BayanatiDesignSystem ||
+    Object.values(window).find(v => v && typeof v === 'object' && v.BrandBar && v.Button) || {};
+
+const { Field, TextInput, PickerField, PhoneField, OtpInput, Checkbox, Radio, SegmentedControl } = NS;
+function Card() {
+  return (
+    <div dir="rtl" style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:18 }}>
+      <Field label="رقم الحساب" helper="كما يظهر في دفتر الحساب"><TextInput value="0012 4417 8890" ltr /></Field>
+      <Field label="الاسم الكامل بالعربي"><TextInput value="محمد الأمين عبدالله" focused /></Field>
+      <Field label="الرقم الوطني" error="الرقم الوطني غير صحيح"><TextInput value="123" ltr invalid /></Field>
+      <Field label="المهنة"><PickerField value="موظف حكومي" /></Field>
+      <Field label="المحلية / المحافظة"><PickerField placeholder="اختر المحلية" /></Field>
+      <Field label="رقم الهاتف"><PhoneField value="91 234 5678" /></Field>
+      <div style={{ gridColumn:'span 2' }}><Field label="رمز التحقق"><OtpInput value="417" /></Field></div>
+      <Field label="النوع"><SegmentedControl options={['ذكر','أنثى']} value="ذكر" /></Field>
+      <div><div className="lbl">CHECKBOX</div><Checkbox checked>أُقرّ بصحة البيانات</Checkbox></div>
+      <div><div className="lbl">CHECKBOX — OFF</div><Checkbox>حفظ البريد كوسيلة تواصل</Checkbox></div>
+      <div><div className="lbl">RADIO</div><div style={{display:'flex',gap:20}}><Radio checked>نعم</Radio><Radio>لا</Radio></div></div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script>

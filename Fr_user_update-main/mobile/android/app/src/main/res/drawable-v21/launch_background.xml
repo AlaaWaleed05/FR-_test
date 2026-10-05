@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- D7.2 "continuous ground" (AD-012: navy since 2026-09-12): the native launch window and the Flutter splash are both
+     #0b1c47, so the customer sees one unbroken navy screen from tap to first content, with
+     no white flash and no visible native->Flutter handoff.
+
+     NOTE (reviewer, 2026-09-07): drawable-v21/ is the variant that applies on every device
+     this app supports (minSdk 24). Editing only drawable/ silently changes nothing. Both are
+     kept identical. Android 12+ ignores windowBackground entirely — see values-v31/. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/brand_blue" />
+</layer-list>

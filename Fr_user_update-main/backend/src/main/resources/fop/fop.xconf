@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  S8-33 / AD-014. Apache FOP's configuration for the printed update form.
+
+  WHAT IS DELIBERATE HERE, AND WHY:
+
+  * The two IBM Plex Sans Arabic faces are registered EXPLICITLY, by URL, rather than left to
+    FOP's auto-detection. Auto-detection scans the host's own font directories, which means the
+    output would depend on what happens to be installed on the machine doing the rendering - a
+    developer laptop, a CI container and ECS Fargate would each produce a different document. The
+    embedded faces are the ones this repository ships, and nothing else is registered.
+
+  * `embed-url` points at a CLASSPATH resource. The backend is a Spring Boot fat jar; a file path
+    would resolve on a developer machine and fail in the deployed image, which is the worst kind of
+    difference because it only appears after deployment.
+
+  * .ttf, NEVER .otf. FOP extracts CFF data from an OpenType/CFF font and re-embeds it as Type1C,
+    losing exactly the GSUB layout features that join Arabic script. Plain TrueType keeps them.
+    The generator that produces these files (mobile/tool/fetch_and_subset_fonts.py) writes .ttf and
+    its docstring records why.
+
+  * NO `<complex-scripts disabled="true"/>` element, and there must never be one. Complex-script
+    support is ON by default in FOP, and turning it off is how a connected script silently renders
+    as disconnected isolated letters with no error of any kind.
+
+  * `strict-configuration` and `strict-validation` are ON. A mistyped font triplet should fail the
+    render loudly rather than fall back to a default face and produce a document nobody asked for.
+
+  * `source-resolution` / `target-resolution` are FOP's defaults, stated rather than omitted
+    because the portraits and the signature are raster images placed at a physical size.
+-->
+<fop version="1.0">
+
+  <strict-configuration>true</strict-configuration>
+  <strict-validation>true</strict-validation>
+
+  <source-resolution>72</source-resolution>
+  <target-resolution>72</target-resolution>
+
+  <!--
+    NO <hyphenation-base>. It sets the base URI for user-supplied hyphenation pattern files, and
+    an earlier draft of this file carried one pointing at "." under a comment about Arabic that
+    did not describe it. Nothing here sets hyphenate="true", so it was dead - and a relative base
+    would have contradicted this file's own principle above that the output must not depend on the
+    machine doing the rendering. If the form ever needs hyphenation, add it then, with a
+    classpath-scoped value.
+  -->
+
+  <renderers>
+    <renderer mime="application/pdf">
+
+      <!--
+        PDF/A is NOT requested. Product-owner ruling, 2026-09-14 (S8-33): plain PDF now, and the
+        question of archival conformance goes to the bank separately. Turning it on later changes
+        font-embedding rules - full embedding, no subsetting - so it is a deliberate decision and
+        this line is where it would be taken.
+      -->
+
+      <fonts>
+        <font kerning="yes"
+              embed-url="classpath:fonts/IBMPlexSansArabic-Regular.ttf"
+              embedding-mode="subset">
+          <font-triplet name="IBM Plex Sans Arabic" style="normal" weight="normal"/>
+        </font>
+        <!--
+          THE 700 TRIPLET IS NOT OPTIONAL, and leaving it out is a silent failure rather than a
+          loud one. Found live at the S8-33 acceptance render: XSL-FO's `font-weight="bold"`
+          resolves to the NUMERIC weight 700, so a face registered only at 600 is not a match.
+          FOP then substitutes "any,normal,700", which on this machine resolved to the built-in
+          Times-Bold, and Times has no Arabic at all - every bold Arabic word on the page became
+          a row of missing-glyph events. The document still rendered and still had three pages.
+
+          IBM Plex Sans Arabic ships Regular and SemiBold and no 700 weight, so SemiBold answers
+          for both 600 and 700 deliberately: it is the heaviest face the brand bundles, and
+          AD-012's typography ruling uses SemiBold for exactly the emphasis the form asks for.
+        -->
+        <font kerning="yes"
+              embed-url="classpath:fonts/IBMPlexSansArabic-SemiBold.ttf"
+              embedding-mode="subset">
+          <font-triplet name="IBM Plex Sans Arabic" style="normal" weight="700"/>
+          <font-triplet name="IBM Plex Sans Arabic" style="normal" weight="600"/>
+        </font>
+        <!--
+          Amiri, for ONE span: the app name «بياناتي» in the printed form's header, set the way the
+          mobile splash screen sets it. AD-022 (i), 2026-09-18. Ticket 08 decision 2 still governs
+          the rest of the form, which is IBM Plex Sans Arabic throughout.
+
+          REGISTERED AT normal/normal ONLY, and that is not an oversight to be helpfully corrected.
+          The generator bundles Amiri in Regular alone (a bold Naskh at display size reads as heavy
+          rather than emphatic), so there is no 700 face to point a triplet at. The consequence is
+          the failure mode the block above describes, in the one place it can still happen: an
+          `fo:` span that INHERITS font-weight="bold" finds no Amiri match, FOP substitutes
+          "any,normal,700", and on a machine with Times that renders the Arabic as nothing at all.
+          The form pins that span to font-weight="normal" explicitly rather than relying on what it
+          happens to inherit.
+        -->
+        <font kerning="yes"
+              embed-url="classpath:fonts/Amiri-Regular.ttf"
+              embedding-mode="subset">
+          <font-triplet name="Amiri" style="normal" weight="normal"/>
+        </font>
+      </fonts>
+
+    </renderer>
+  </renderers>
+
+</fop>

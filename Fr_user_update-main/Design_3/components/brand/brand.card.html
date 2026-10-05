@@ -1,0 +1,33 @@
+<!-- @dsCard group="Components" viewport="700x180" name="Brand" subtitle="Brand bar, pearl mark and the dune edge" -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .lbl { font-family:var(--font-label); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:7px; }
+  .grid { display:grid; gap:18px; }
+  
+</style>
+<div id="root"></div>
+<script type="text/babel">
+const NS = window.SFB_Bayanati || window.SFBBayanati || window.Bayanati || window.BayanatiDesignSystem ||
+    Object.values(window).find(v => v && typeof v === 'object' && v.BrandBar && v.Button) || {};
+
+const { BrandBar, Pearl, DuneEdge } = NS;
+function Card() {
+  return (
+    <div dir="rtl" className="grid" style={{ gridTemplateColumns:'390px 1fr' }}>
+      <div><div className="lbl">BRANDBAR ON PAPER</div><div style={{ background:'var(--paper)' }}><BrandBar /></div></div>
+      <div><div className="lbl">PEARL 34 / 56 / 78</div>
+        <div style={{ display:'flex', gap:14, alignItems:'center' }}>
+          <Pearl size={34} /><Pearl size={56} /><Pearl size={78} ring={false} />
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script>

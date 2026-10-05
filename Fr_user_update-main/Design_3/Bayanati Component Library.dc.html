@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-3e348da5-7c1f-4b5c-8e85-5bb2163c99d5/styles.css">
+<script src="_ds/industry-3e348da5-7c1f-4b5c-8e85-5bb2163c99d5/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0b1c47; --navy-deep:#0c193a; --ink:#111523; --steel:#5980a6;
+    --steel-100:#e7ecf2; --paper:#ffffff; --ground:#f2f2f3;
+    --ok:#2f7d5d; --bad:#9c2f2f; --warn:#8a6a1f;
+    --line:rgba(11,28,71,.28); --line-soft:rgba(11,28,71,.14);
+  }
+  body { margin:0; background:#f2f2f3; }
+  a { color:#0b1c47; }
+  a:hover { color:#5980a6; }
+</style>
+</helmet>
+
+<div style="font-family:'IBM Plex Sans Arabic', sans-serif; color:var(--navy); padding:48px 32px 96px; display:flex; flex-direction:column; gap:56px; max-width:1180px; margin:0 auto;">
+
+  <div style="display:flex; flex-direction:column; gap:8px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">Bayanati · component library v2 · one-time account data update</div>
+    <div dir="rtl" style="font-family:Amiri, serif; font-size:44px; line-height:1.1;">مكتبة مكوّنات بيــانــاتــي</div>
+    <div style="font-size:14px; color:rgba(11,28,71,.65); max-width:70ch;">Arabic-first, RTL, one journey of twelve stages completed once per account. No dashboard, no tab bar, no repeat visits — every screen is a step, and the only navigation is forward, back, or abandon. White surfaces, hairline boundaries, square corners; navy is reserved for the brand moments (launch, stage header, confirmation).</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">01 — Color</div>
+    <div class="blueprint" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--navy);"></div><div style="font-size:12px;">navy · #0b1c47</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--navy-deep);"></div><div style="font-size:12px;">navy-deep · #0c193a</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--ink);"></div><div style="font-size:12px;">ink · #111523</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--steel);"></div><div style="font-size:12px;">steel · #5980a6</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--steel-100);"></div><div style="font-size:12px;">steel-100 · #e7ecf2</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--paper); border:1px solid rgba(11,28,71,.18);"></div><div style="font-size:12px;">paper · #ffffff</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--ground); border:1px solid rgba(11,28,71,.18);"></div><div style="font-size:12px;">ground · #f2f2f3</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--ok);"></div><div style="font-size:12px;">ok · #2f7d5d</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--bad);"></div><div style="font-size:12px;">error · #9c2f2f</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px;"><div style="height:60px; background:var(--warn);"></div><div style="font-size:12px;">warn · #8a6a1f</div></div>
+    </div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">The navy ladder comes from the owner's palette PDF (#111523 / #0f162b / #0c193a). Field boundaries are a 1px <code>--line</code> hairline at 3.4:1 against white — the boundary is load-bearing, not decorative, exactly as app_theme.dart argues.</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">02 — Type · IBM Plex Sans Arabic (already bundled in the app)</div>
+    <div dir="rtl" class="blueprint" style="display:flex; flex-direction:column; gap:14px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div style="font-family:Amiri, serif; font-size:44px; line-height:1.1;">بيــانــاتــي — brand display / Amiri 44</div>
+      <div style="font-size:26px; font-weight:600; line-height:1.4;">عنوان المرحلة — stage title / 600 · 26</div>
+      <div style="font-size:19px; font-weight:600; line-height:1.5;">عنوان مجموعة حقول — group 600 · 19</div>
+      <div style="font-size:16px; line-height:1.6;">نص أساسي يشرح للعميل ما يجب فعله في هذه المرحلة بجملة واحدة قصيرة — body 400 · 16 / 1.6</div>
+      <div style="font-size:14px; color:rgba(11,28,71,.62); line-height:1.6;">نص مساعد أسفل الحقل — helper 400 · 14</div>
+      <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--steel);">STAGE LABEL / BARLOW CONDENSED 12</div>
+      <div dir="ltr" style="font-size:22px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right;">+249 91 234 5678</div>
+    </div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">letter-spacing 0 everywhere (positive tracking breaks Arabic joins), body never below 16, helper never below 14, no italic — carried over from app_theme.dart. Amiri is the splash face only — the launch screen, Arabic only. Every other surface, including the confirmation, is IBM Plex Sans Arabic. Latin labels use IBM Plex Sans Condensed, the matching member of the same superfamily. Numerals follow the repo's existing rules — customers may TYPE Arabic-Indic digits and ArabicDigitInputFormatter transliterates them to ASCII before anything is sent; everything DISPLAYED is Latin digits, tabular, and direction-isolated (LtrValue for a standalone value, FSI/PDI when interpolated into an Arabic sentence). Dates display as DD/MM/YYYY, never ISO (display_date.dart).</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">03 — Stage header &amp; progress</div>
+    <div dir="rtl" class="blueprint" style="display:flex; flex-wrap:wrap; gap:26px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+      <div style="width:390px; background:#fff;">
+        <div style="display:flex; align-items:center; gap:8px; padding:12px 14px;">
+          <button type="button" aria-label="رجوع" style="width:44px; height:44px; display:grid; place-items:center; background:transparent; border:none; color:var(--navy); cursor:pointer; padding:0;" style-hover="background:rgba(89,128,166,.12)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+          <div style="flex:1; display:flex; flex-direction:column; gap:1px;">
+            <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:12px; letter-spacing:.13em; color:var(--steel);">STAGE 5 / 12</div>
+            <div style="font-size:19px; font-weight:600; line-height:1.3;">بيانات العمل والدخل</div>
+          </div>
+          <button type="button" style="height:40px; padding:0 12px; background:transparent; border:none; color:var(--bad); font-family:inherit; font-size:14px; font-weight:600; cursor:pointer;" style-hover="background:rgba(156,47,47,.08)">إنهاء</button>
+        </div>
+        <div style="display:flex; gap:3px; padding:0 14px 12px;">
+          <div style="flex:1; height:3px; background:var(--navy);"></div><div style="flex:1; height:3px; background:var(--navy);"></div><div style="flex:1; height:3px; background:var(--navy);"></div><div style="flex:1; height:3px; background:var(--navy);"></div>
+          <div style="flex:1; height:3px; background:var(--steel);"></div>
+          <div style="flex:1; height:3px; background:var(--steel-100);"></div><div style="flex:1; height:3px; background:var(--steel-100);"></div><div style="flex:1; height:3px; background:var(--steel-100);"></div><div style="flex:1; height:3px; background:var(--steel-100);"></div><div style="flex:1; height:3px; background:var(--steel-100);"></div><div style="flex:1; height:3px; background:var(--steel-100);"></div><div style="flex:1; height:3px; background:var(--steel-100);"></div>
+        </div>
+        <div style="height:1px; background:var(--line-soft);"></div>
+      </div>
+
+      <div style="width:390px; display:flex; flex-direction:column; gap:10px;">
+        <div dir="ltr" style="font-size:12px; color:rgba(11,28,71,.6);"><strong>Proposal — not in the app today.</strong> Twelve segments covering 1a, 1b, 2 and stages 3–12; the <code>/final-stages</code> gate is not a segment because the customer never sees it. Done = navy, current = steel, remaining = steel-100. The title shrinks to fit rather than truncating (ScreenTitle / BoxFit.scaleDown, already in the repo).</div>
+        <div style="display:flex; align-items:center; gap:10px; background:rgba(138,106,31,.1); border:1px solid rgba(138,106,31,.45); padding:11px 13px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="1.5" style="flex:0 0 auto;"><path d="M3 12a9 9 0 0 1 9-9"></path><path d="M12 21a9 9 0 0 0 9-9"></path><path d="M4 4l16 16"></path></svg>
+          <div style="font-size:14px; line-height:1.6;">لا يوجد اتصال بالإنترنت. يتم عرض بياناتك المحفوظة، وبعض الإجراءات غير متاحة حتى يعود الاتصال.</div>
+        </div>
+        <div dir="ltr" style="font-size:12px; color:rgba(11,28,71,.6);">Offline banner — verbatim from offline_banner.dart. A plain statement, deliberately not an error colour: going offline mid-journey is expected, not a fault.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">04 — Fields</div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">Labels use the bank's own form vocabulary from field-provenance.md. Validation strings shown here are illustrative — each screen's <code>_validationError</code> owns the real message, and FieldErrorState already attaches it to the failing field and focuses it, which is the behaviour drawn here.</div>
+    <div dir="rtl" class="blueprint" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px,1fr)); gap:20px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+      <label style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:rgba(11,28,71,.72);">رقم الحساب</span>
+        <input type="text" value="0012 4417 8890" style="height:52px; border:1px solid var(--line); background:#fff; padding:0 14px; font-family:inherit; font-size:16px; color:var(--navy); direction:ltr; text-align:right;">
+        <span style="font-size:14px; color:rgba(11,28,71,.62);">كما يظهر في دفتر الحساب أو البطاقة</span>
+      </label>
+
+      <label style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:var(--steel);">الاسم الكامل بالعربي · focused</span>
+        <input type="text" value="محمد الأمين عبدالله" style="height:52px; border:1.5px solid var(--steel); outline:2px solid rgba(89,128,166,.22); background:#fff; padding:0 14px; font-family:inherit; font-size:16px; color:var(--navy);">
+      </label>
+
+      <label style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:var(--bad);">الرقم الوطني · error</span>
+        <input type="text" value="123" style="height:52px; border:1.5px solid var(--bad); background:#fff; padding:0 14px; font-family:inherit; font-size:16px; color:var(--navy); direction:ltr; text-align:right;">
+        <span style="display:flex; align-items:center; gap:6px; font-size:14px; color:var(--bad);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>
+          الرقم الوطني غير صحيح
+        </span>
+      </label>
+
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:rgba(11,28,71,.72);">المهنة · reference picker</span>
+        <button type="button" style="height:52px; border:1px solid var(--line); background:#fff; padding:0 14px; font-family:inherit; font-size:16px; color:var(--navy); display:flex; align-items:center; justify-content:space-between; cursor:pointer; text-align:start;" style-hover="border-color:var(--steel)">
+          <span>موظف حكومي</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--steel)" stroke-width="1.5"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+        <span style="font-size:14px; color:rgba(11,28,71,.62);">قائمة من الخادم · 138 مهنة</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:rgba(11,28,71,.72);">رقم الهاتف</span>
+        <div style="display:flex; border:1px solid var(--line); background:#fff; height:52px; align-items:center;">
+          <div dir="ltr" style="padding:0 12px; border-inline-end:1px solid var(--line-soft); font-size:16px; color:rgba(11,28,71,.7); height:100%; display:flex; align-items:center;">+249</div>
+          <input type="text" value="91 234 5678" style="flex:1; border:none; outline:none; background:transparent; padding:0 12px; font-family:inherit; font-size:16px; color:var(--navy); direction:ltr; text-align:right; height:100%;">
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:rgba(11,28,71,.72);">تاريخ الميلاد · DD / MM / YYYY</span>
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr); gap:8px; direction:ltr;">
+          <input type="text" value="14" style="min-width:0; width:100%; box-sizing:border-box; height:52px; border:1px solid var(--line); background:#fff; font-family:inherit; font-size:16px; text-align:center; color:var(--navy);">
+          <input type="text" value="03" style="min-width:0; width:100%; box-sizing:border-box; height:52px; border:1px solid var(--line); background:#fff; font-family:inherit; font-size:16px; text-align:center; color:var(--navy);">
+          <input type="text" value="1990" style="min-width:0; width:100%; box-sizing:border-box; height:52px; border:1px solid var(--line); background:#fff; font-family:inherit; font-size:16px; text-align:center; color:var(--navy);">
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:rgba(11,28,71,.72);">طريقة التوقيع</span>
+        <div style="display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line);">
+          <div style="height:50px; display:grid; place-items:center; background:var(--navy); color:#fff; font-size:15px; font-weight:600;">أرسم توقيعي</div>
+          <div style="height:50px; display:grid; place-items:center; background:#fff; color:var(--navy); font-size:15px;">أرفع صورة</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <span style="font-size:14px; color:rgba(11,28,71,.72);">رمز التحقق — رسالة نصية</span>
+        <div dir="ltr" style="display:grid; grid-template-columns:repeat(6, 1fr); gap:8px;">
+          <div style="height:58px; border:1.5px solid var(--steel); display:grid; place-items:center; font-size:22px; font-weight:600;">4</div>
+          <div style="height:58px; border:1px solid var(--line); display:grid; place-items:center; font-size:22px; font-weight:600;">1</div>
+          <div style="height:58px; border:1px solid var(--line); display:grid; place-items:center; font-size:22px; font-weight:600;">7</div>
+          <div style="height:58px; border:1px solid var(--line);"></div>
+          <div style="height:58px; border:1px solid var(--line);"></div>
+          <div style="height:58px; border:1px solid var(--line);"></div>
+        </div>
+        <span style="font-size:14px; color:rgba(11,28,71,.62);">إعادة الإرسال بعد <span dir="ltr" style="font-variant-numeric:tabular-nums;">00:42</span></span>
+      </div>
+
+      <label style="display:flex; gap:11px; align-items:flex-start; cursor:pointer;">
+        <span style="width:22px; height:22px; flex:0 0 auto; border:1.5px solid var(--navy); background:var(--navy); display:grid; place-items:center; margin-top:2px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>
+        </span>
+        <span style="font-size:15px; line-height:1.6;">أُقرّ بأن البيانات المدخلة صحيحة وأتحمّل مسؤولية صحتها.</span>
+      </label>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">05 — Channels, review rows, provenance</div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">Channel labels are verbatim from channel_labels.dart (الرسائل النصية / واتساب / البريد الإلكتروني). The WhatsApp glyph here is a generic outline mark, not Meta's brand asset — BL-090 still owns that licensing decision.</div>
+    <div dir="rtl" class="blueprint" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:20px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+      <div style="border:1px solid var(--line-soft); background:#fff;">
+        <div style="display:flex; align-items:center; gap:12px; padding:15px 16px; border-bottom:1px solid var(--line-soft);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--steel)" stroke-width="1.5" style="flex:0 0 auto;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:600;">الرسائل النصية</div>
+            <div dir="ltr" style="font-size:14px; color:rgba(11,28,71,.6); text-align:right; font-variant-numeric:tabular-nums;">+249 91 ••• 5678</div>
+          </div>
+          <span style="display:flex; align-items:center; gap:5px; color:var(--ok); font-size:13px; font-weight:600;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5 10 17.5 19 7"></path></svg> تم التحقق
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:15px 16px; border-bottom:1px solid var(--line-soft);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--steel)" stroke-width="1.5" style="flex:0 0 auto;"><path d="M21 12a9 9 0 1 1-3.6-7.2L21 3l-1.2 4.2A9 9 0 0 1 21 12z"></path></svg>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:600;">واتساب</div>
+            <div dir="ltr" style="font-size:14px; color:rgba(11,28,71,.6); text-align:right; font-variant-numeric:tabular-nums;">+249 91 ••• 5678</div>
+          </div>
+          <span style="font-size:13px; color:var(--steel); font-weight:600;">بانتظار الرمز</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:15px 16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--steel)" stroke-width="1.5" style="flex:0 0 auto;"><path d="M3 6h18v12H3z"></path><path d="m3 7 9 6 9-6"></path></svg>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:600;">البريد الإلكتروني</div>
+            <div dir="ltr" style="font-size:14px; color:rgba(11,28,71,.6); text-align:right;">m•••@example.com</div>
+          </div>
+          <span style="font-size:13px; color:var(--bad); font-weight:600;">رمز غير صحيح</span>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--line-soft); background:#fff;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line-soft); background:var(--steel-100);">
+          <div style="font-size:15px; font-weight:600;">البيانات الشخصية</div>
+          <button type="button" style="background:transparent; border:none; color:var(--navy); font-family:inherit; font-size:14px; font-weight:600; cursor:pointer; padding:4px 6px;" style-hover="background:rgba(89,128,166,.16)">تعديل</button>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 16px; border-bottom:1px solid var(--line-soft);">
+          <div style="flex:1;">
+            <div style="font-size:14px; color:rgba(11,28,71,.6);">الاسم الكامل بالعربي</div>
+            <div style="font-size:16px; font-weight:600;">محمد الأمين عبدالله</div>
+          </div>
+          <span style="font-size:12px; border:1px solid var(--line-soft); color:rgba(11,28,71,.6); padding:4px 8px; white-space:nowrap;">المسح — الهوية الوطنية</span>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 16px; border-bottom:1px solid var(--line-soft);">
+          <div style="flex:1;">
+            <div style="font-size:14px; color:rgba(11,28,71,.6);">الرقم الوطني</div>
+            <div dir="ltr" style="font-size:16px; font-weight:600; text-align:right; font-variant-numeric:tabular-nums;">12345678901</div>
+          </div>
+          <span style="font-size:12px; border:1px solid rgba(89,128,166,.5); color:var(--steel); padding:4px 8px; white-space:nowrap;">السجل المدني</span>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 16px;">
+          <div style="flex:1;">
+            <div style="font-size:14px; color:rgba(11,28,71,.6);">المهنة</div>
+            <div style="font-size:16px; font-weight:600;">موظف حكومي</div>
+          </div>
+          <span style="font-size:12px; border:1px solid var(--line-soft); color:rgba(11,28,71,.6); padding:4px 8px; white-space:nowrap;">إدخال العميل</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">Provenance vocabulary is the one in docs/journeys/field-provenance.md: S1 السجل المدني, S2 المسح (labelled with the document actually scanned — الهوية الوطنية or جواز السفر), S3 إدخال العميل. Fields sourced S1/S2 are shown, not edited; the address block and occupation are customer-entered by design, because refreshing them is the point of the campaign.</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">06 — Capture surfaces (scan · liveness · signature)</div>
+    <div dir="rtl" class="blueprint" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="position:relative; aspect-ratio:1.586; background:var(--navy); display:grid; place-items:center;">
+          <div style="position:absolute; inset:18px; border:1.5px dashed rgba(255,255,255,.45);"></div>
+          <div style="position:absolute; inset:18px;">
+            <i style="position:absolute; inset-inline-start:-1px; top:-1px; width:26px; height:26px; border-top:3px solid #fff; border-inline-start:3px solid #fff;"></i>
+            <i style="position:absolute; inset-inline-end:-1px; top:-1px; width:26px; height:26px; border-top:3px solid #fff; border-inline-end:3px solid #fff;"></i>
+            <i style="position:absolute; inset-inline-start:-1px; bottom:-1px; width:26px; height:26px; border-bottom:3px solid #fff; border-inline-start:3px solid #fff;"></i>
+            <i style="position:absolute; inset-inline-end:-1px; bottom:-1px; width:26px; height:26px; border-bottom:3px solid #fff; border-inline-end:3px solid #fff;"></i>
+          </div>
+          <div style="position:relative; color:rgba(255,255,255,.9); font-size:14px; text-align:center; padding:0 30px;">ضع البطاقة داخل الإطار</div>
+        </div>
+        <div dir="ltr" style="font-size:12px; color:rgba(11,28,71,.6);">Document scan target — ID card aspect, corner brackets, navy field.</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="position:relative; aspect-ratio:1.586; background:var(--navy); display:grid; place-items:center;">
+          <div style="width:132px; height:168px; border:1.5px dashed rgba(255,255,255,.5); border-radius:50%;"></div>
+          <div style="position:absolute; bottom:14px; left:0; right:0; text-align:center; color:rgba(255,255,255,.9); font-size:14px;">انظر إلى الكاميرا مباشرة</div>
+        </div>
+        <div dir="ltr" style="font-size:12px; color:rgba(11,28,71,.6);">Liveness — the one oval in the system; the shape is a camera affordance, not a style.</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="position:relative; aspect-ratio:1.586; background:#fff; border:1px solid var(--line); display:grid; place-items:center;">
+          <svg viewBox="0 0 300 120" style="width:78%; height:auto;"><path d="M18 84c26-42 44 16 66-12s30-40 52-14 34 34 58 6 44-18 66-6" fill="none" stroke="#0b1c47" stroke-width="2.4" stroke-linecap="round"></path></svg>
+          <div style="position:absolute; bottom:14px; inset-inline-end:14px; font-size:13px; color:var(--steel);">امسح</div>
+          <div style="position:absolute; bottom:38px; left:26px; right:26px; height:1px; background:var(--line-soft);"></div>
+        </div>
+        <div dir="ltr" style="font-size:12px; color:rgba(11,28,71,.6);">Signature pad — white, baseline rule, clear action inline.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">07 — Actions</div>
+    <div dir="rtl" class="blueprint" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:14px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <button type="button" style="height:54px; background:var(--navy); color:#fff; border:none; font-family:inherit; font-size:16px; font-weight:600; cursor:pointer;" style-hover="background:#132a5e" style-active="background:#081537">التالي</button>
+      <button type="button" style="height:54px; background:transparent; color:var(--navy); border:1.4px solid var(--navy); font-family:inherit; font-size:16px; font-weight:600; cursor:pointer;" style-hover="background:rgba(89,128,166,.12)">السابق</button>
+      <button type="button" style="height:54px; background:transparent; color:var(--navy); border:none; font-family:inherit; font-size:16px; font-weight:600; cursor:pointer;" style-hover="background:rgba(89,128,166,.12)">إعادة المحاولة</button>
+      <button type="button" style="height:54px; background:transparent; color:var(--bad); border:1.4px solid var(--bad); font-family:inherit; font-size:16px; font-weight:600; cursor:pointer;" style-hover="background:rgba(156,47,47,.08)">إنهاء الجلسة</button>
+      <button type="button" disabled="disabled" style="height:54px; background:var(--navy); color:#fff; border:none; font-family:inherit; font-size:16px; font-weight:600; opacity:.45;">التالي</button>
+      <div style="height:54px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; gap:10px; font-size:16px; font-weight:600;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9" stroke-opacity=".35"></circle><path d="M21 12a9 9 0 0 0-9-9"></path></svg>
+        جاري الإرسال
+      </div>
+    </div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">One primary per screen, pinned to the bottom, full width, 54pt. Abandon is never a bottom button — it lives in the header so it can't be hit by muscle memory.</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Sans Condensed', sans-serif; font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--steel);">08 — Terminal &amp; blocked states</div>
+    <div dir="rtl" class="blueprint" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:20px; padding:22px;">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+      <div style="position:relative; background:var(--navy); color:#fff; padding:42px 24px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; overflow:hidden;">
+        <div style="position:absolute; inset:0; background:radial-gradient(95% 70% at 50% 18%, rgba(89,128,166,.42) 0%, rgba(11,28,71,0) 70%);"></div>
+        <div style="position:relative; width:66px; height:66px; border-radius:50%; border:1.5px solid rgba(255,255,255,.5); display:grid; place-items:center;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>
+        </div>
+        <div style="position:relative; font-family:Amiri, serif; font-size:28px;">تم إرسال طلبك للمراجعة</div>
+        <div style="position:relative; font-size:15px; color:rgba(255,255,255,.8); line-height:1.6; max-width:32ch;">سنتواصل معك عبر قنوات الاتصال التي اخترتها.</div>
+        <div style="position:relative; border:1px solid rgba(255,255,255,.35); padding:10px 18px; display:flex; flex-direction:column; gap:3px;">
+          <div style="font-size:13px; color:rgba(255,255,255,.7);">الرقم المرجعي</div>
+          <div dir="ltr" style="font-size:22px; font-weight:600; font-variant-numeric:tabular-nums;">FRU-2026-004182</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--line-soft); background:#fff; padding:42px 24px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;">
+        <div style="width:56px; height:56px; border:1.5px solid var(--steel); display:grid; place-items:center;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--steel)" stroke-width="1.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5l3 2"></path></svg>
+        </div>
+        <div style="font-size:20px; font-weight:600;">هذا الحساب مُحدَّث بالفعل</div>
+        <div style="font-size:15px; color:rgba(11,28,71,.65); line-height:1.6; max-width:32ch;">تم تحديث بيانات هذا الحساب بالفعل. لا يمكن إعادة التحديث لنفس الحساب.</div>
+        <button type="button" style="height:50px; padding:0 26px; background:transparent; color:var(--navy); border:1.4px solid var(--navy); font-family:inherit; font-size:15px; font-weight:600; cursor:pointer;" style-hover="background:rgba(89,128,166,.12)">العودة إلى البداية</button>
+      </div>
+
+      <div style="border:1px solid var(--line-soft); background:#fff; padding:42px 24px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;">
+        <div style="width:56px; height:56px; border:1.5px solid var(--bad); display:grid; place-items:center;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--bad)" stroke-width="1.5" stroke-linecap="round"><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>
+        </div>
+        <div style="font-size:20px; font-weight:600;">تعذّر إكمال المسح</div>
+        <div style="font-size:15px; color:rgba(11,28,71,.65); line-height:1.6; max-width:32ch;">استنفدت عدد المحاولات المسموح بها. يمكنك المحاولة مرة أخرى بعد 24 ساعة أو زيارة أقرب فرع.</div>
+        <button type="button" style="height:50px; padding:0 26px; background:transparent; color:var(--navy); border:1.4px solid var(--navy); font-family:inherit; font-size:15px; font-weight:600; cursor:pointer;" style-hover="background:rgba(89,128,166,.12)">أقرب فرع</button>
+      </div>
+    </div>
+    <div style="font-size:13px; color:rgba(11,28,71,.65);">The navy field is spent on exactly two moments — launch and confirmation. Every other terminal state is white, so "you're done" stays visually unique in a journey a customer sees once.</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

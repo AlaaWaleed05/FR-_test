@@ -1,0 +1,14 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Semantic" subtitle="Never a fill larger than a chip or an icon frame." -->
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; padding:18px; background:var(--surface-canvas); font-family:var(--font-body); color:var(--text-body); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; }
+  .sw { display:flex; flex-direction:column; gap:6px; }
+  .chip { width:104px; height:56px; }
+  .n { font-size:11px; font-family:var(--font-label); letter-spacing:.06em; color:var(--text-muted); }
+  .v { font-size:11px; font-variant-numeric:tabular-nums; color:var(--text-subtle); }
+</style>
+<div class="row">
+<div class="sw"><div class="chip" style="background:#2f7d5d; "></div><div class="n">ok</div><div class="v">--ok</div></div><div class="sw"><div class="chip" style="background:#9c2f2f; "></div><div class="n">error</div><div class="v">--error</div></div><div class="sw"><div class="chip" style="background:#8a6a1f; "></div><div class="n">warn</div><div class="v">--warn</div></div><div class="sw"><div class="chip" style="background:#ffffff; border:1px solid var(--line-rule);"></div><div class="n">paper</div><div class="v">--paper</div></div><div class="sw"><div class="chip" style="background:#f2f2f3; border:1px solid var(--line-rule);"></div><div class="n">ground</div><div class="v">--ground</div></div>
+</div>
