@@ -25,9 +25,8 @@ import java.time.Instant;
 public record ExportRow(
     String referenceNumber,
     String accountNumber,
-    String branchCode,
-    String branchLabelEn,
-    String branchLabelAr,
+    
+    
     String status,
     String statusLabelEn,
     String provenance,
@@ -49,9 +48,7 @@ public record ExportRow(
   public static final String[] COLUMNS = {
     "referenceNumber",
     "accountNumber",
-    "branchCode",
-    "branchLabelEn",
-    "branchLabelAr",
+  
     "status",
     "statusLabelEn",
     "provenance",
