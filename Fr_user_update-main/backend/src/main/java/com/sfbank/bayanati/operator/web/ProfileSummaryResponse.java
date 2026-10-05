@@ -6,7 +6,7 @@ import java.time.Instant;
 public record ProfileSummaryResponse(
     String profileId,
     String accountNumber,
-    String branchCode,
+  
     String displayNameAr,
     String displayNameEn,
     String status,
@@ -18,7 +18,7 @@ public record ProfileSummaryResponse(
     return new ProfileSummaryResponse(
         summary.profileId(),
         summary.accountNumber(),
-        summary.branchCode(),
+        
         summary.displayNameAr(),
         summary.displayNameEn(),
         summary.status(),
