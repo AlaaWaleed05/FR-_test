@@ -11,7 +11,7 @@ import java.time.Instant;
 public record ProfileSummary(
     String profileId,
     String accountNumber,
-    String branchCode,
+    
     String displayNameAr,
     String displayNameEn,
     String status,
