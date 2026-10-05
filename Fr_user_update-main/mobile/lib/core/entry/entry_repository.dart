@@ -25,7 +25,7 @@ const _resumeStageBeyondStage6 = 'beyondStage6';
 /// their fields on open/resume.
 class EntryDraft {
   const EntryDraft({
-    this.branchCode,
+    
     this.accountNumber,
     this.phoneNumber,
     this.smsSelected = true,
@@ -46,7 +46,7 @@ class EntryDraft {
     this.emailSelected = true,
   });
 
-  final String? branchCode;
+  
   final String? accountNumber;
   final String? phoneNumber;
   final bool smsSelected;
@@ -62,7 +62,7 @@ class EntryDraft {
   /// (e.g. Stage 1a) must not clobber fields another screen (Stage 1b) already saved into the
   /// same singleton row.
   EntryDraft copyWith({
-    String? branchCode,
+    
     String? accountNumber,
     String? phoneNumber,
     bool? smsSelected,
@@ -71,7 +71,7 @@ class EntryDraft {
     bool? emailSelected,
   }) {
     return EntryDraft(
-      branchCode: branchCode ?? this.branchCode,
+      
       accountNumber: accountNumber ?? this.accountNumber,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       smsSelected: smsSelected ?? this.smsSelected,
@@ -106,7 +106,7 @@ class EntryRepository {
     )..where((t) => t.id.equals(0))).getSingleOrNull();
     if (row == null) return const EntryDraft();
     return EntryDraft(
-      branchCode: row.branchCode,
+      
       accountNumber: row.accountNumber,
       phoneNumber: row.phoneNumber,
       smsSelected: row.smsSelected,
@@ -141,10 +141,10 @@ class EntryRepository {
   /// account/branch pair becomes an in-progress session Stage 0 can ask the backend about on a
   /// future launch — a bare unsubmitted draft never reaches this method.
   Future<AccountCheckResult> checkAccount(
-    String branch,
+    
     String accountNumber,
   ) async {
-    final result = await _api.checkAccount(branch, accountNumber);
+    final result = await _api.checkAccount(accountNumber);
     if (result.continuation == AccountContinuation.proceed) {
       await _db
           .into(_db.localProgress)
