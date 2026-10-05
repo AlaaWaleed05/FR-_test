@@ -34,7 +34,7 @@ class PinnedReferenceVersions extends Table {
 /// `LocalProgress`.
 class LocalDraft extends Table {
   IntColumn get id => integer().withDefault(const Constant(0))();
-  TextColumn get branchCode => text().nullable()();
+  
   TextColumn get accountNumber => text().nullable()();
   TextColumn get phoneNumber => text().nullable()();
   BoolColumn get smsSelected => boolean().withDefault(const Constant(true))();
@@ -66,7 +66,7 @@ class LocalDraft extends Table {
 /// validated, not whatever is mid-edit in the draft.
 class LocalProgress extends Table {
   IntColumn get id => integer().withDefault(const Constant(0))();
-  TextColumn get verifiedBranchCode => text()();
+
   TextColumn get verifiedAccountNumber => text()();
 
   /// `contactChannels` — 1a passed, not yet submitted 1b. `awaitingVerification` — 1b submitted,
@@ -224,7 +224,7 @@ class SessionDatabase extends _$SessionDatabase {
   factory SessionDatabase.forTesting() => SessionDatabase(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   /// v2 (S5-02): `LocalDraft`/`LocalProgress` added to a schema an S5-01 build may already have
   /// created at version 1 (`PinnedReferenceVersions` only). Without this, a device that already
