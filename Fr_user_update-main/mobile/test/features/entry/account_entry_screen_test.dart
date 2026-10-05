@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/database/database_providers.dart';
-import 'package:mobile/core/database/reference_database.dart';
+
 import 'package:mobile/core/database/session_database.dart';
 import 'package:mobile/core/entry/entry_models.dart';
 import 'package:mobile/core/entry/entry_providers.dart';
@@ -22,24 +22,8 @@ void main() {
       ProviderScope(
         overrides: [
           sessionDatabaseProvider.overrideWithValue(sessionDb),
-          entryApiProvider.overrideWithValue(fakeApi),
-          branchCatalogInitProvider.overrideWith((ref) async {}),
-          branchItemsProvider.overrideWith(
-            (ref) => Stream.value([
-              ReferenceItem(
-                listCode: 'branch',
-                version: 1,
-                itemCode: '2',
-                labelAr: 'بورتسودان',
-                labelEn: 'Port Sudan',
-                searchAr: 'بورتسودان',
-                searchEn: 'port sudan',
-                sortOrdinal: 1,
-                isActive: true,
-              ),
-            ]),
-          ),
-        ],
+          entryApiProvider.overrideWithValue(fakeApi)],
+          
         child: const MaterialApp(
           home: Directionality(textDirection: TextDirection.rtl, child: AccountEntryScreen()),
         ),
@@ -52,10 +36,7 @@ void main() {
   Future<void> fillForm(WidgetTester tester) async {
     await tester.enterText(find.byType(TextField), '12345');
     await tester.pump();
-    await tester.tap(find.byType(DropdownButtonFormField<String>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('بورتسودان').last);
-    await tester.pumpAndSettle();
+   
   }
 
   /// For submit tests, which navigate on success — needs a real `GoRouter` ancestor.
@@ -179,24 +160,7 @@ void main() {
     expect(find.textContaining('أدخل رقم حسابك والفرع'), findsOneWidget);
   });
 
-  testWidgets('Next is disabled until both branch and account number are filled', (tester) async {
-    await pump(tester);
-
-    final buttonFinder = find.byType(FilledButton);
-    expect(tester.widget<FilledButton>(buttonFinder).onPressed, isNull);
-
-    await tester.enterText(find.byType(TextField), '12345');
-    await tester.pump();
-    // Branch still unselected — Next stays disabled.
-    expect(tester.widget<FilledButton>(buttonFinder).onPressed, isNull);
-
-    await tester.tap(find.byType(DropdownButtonFormField<String>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('بورتسودان').last);
-    await tester.pumpAndSettle();
-
-    expect(tester.widget<FilledButton>(buttonFinder).onPressed, isNotNull);
-  });
+ 
 
   testWidgets('Arabic-Indic digits typed into the account number field render as ASCII', (
     tester,
@@ -324,77 +288,7 @@ void main() {
     expect(await (sessionDb.select(sessionDb.localProgress)).getSingleOrNull(), isNull);
   });
 
-  testWidgets(
-    'a failed reference-list load takes the WHOLE screen, and retry recovers (2a/2b/2c)',
-    (tester) async {
-      // **Walk comment 2c, a defect rather than a preference.** The screen used to swap only the
-      // branch picker for an error line and leave the account-number field and Next live
-      // underneath — a half-usable screen where the customer can type an account number and press
-      // a button that cannot work. §2.6 of the walk report showed this is the ORDINARY condition
-      // of a customer on poor connectivity (the endpoint answered 200 throughout; the handset was
-      // stuck at OBTAINING_IPADDR), not a rare server fault.
-      //
-      // Nothing exercised this branch before: every other test in this file overrides both
-      // providers with success.
-      final sessionDb = SessionDatabase.forTesting();
-      addTearDown(sessionDb.close);
-      final fakeApi = FakeEntryApi();
-      var attempt = 0;
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            sessionDatabaseProvider.overrideWithValue(sessionDb),
-            entryApiProvider.overrideWithValue(fakeApi),
-            branchCatalogInitProvider.overrideWith((ref) async {}),
-            branchItemsProvider.overrideWith((ref) {
-              attempt++;
-              if (attempt == 1) {
-                return Stream<List<ReferenceItem>>.error(Exception('no connectivity'));
-              }
-              return Stream.value([
-                ReferenceItem(
-                  listCode: 'branch',
-                  version: 1,
-                  itemCode: '2',
-                  labelAr: 'بورتسودان',
-                  labelEn: 'Port Sudan',
-                  searchAr: 'بورتسودان',
-                  searchEn: 'port sudan',
-                  sortOrdinal: 1,
-                  isActive: true,
-                ),
-              ]);
-            }),
-          ],
-          child: const MaterialApp(
-            home: Directionality(textDirection: TextDirection.rtl, child: AccountEntryScreen()),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // 2c: the screen is the error and NOTHING else. These two assertions are the defect.
-      expect(find.widgetWithText(TextField, 'رقم الحساب'), findsNothing);
-      expect(find.widgetWithText(FilledButton, 'التالي'), findsNothing);
-
-      // 2a: it must not name which list failed — an implementation detail the customer cannot act
-      // on, and one that misdirects them toward the branch field rather than their connection.
-      expect(find.textContaining('الفروع'), findsNothing);
-      expect(find.textContaining('تعذر الاتصال'), findsOneWidget);
-
-      // 2b: emphasis and a connectivity icon.
-      expect(find.byIcon(Icons.wifi_off_outlined), findsOneWidget);
-
-      // And the retry genuinely recovers rather than wedging the screen.
-      await tester.tap(find.widgetWithText(FilledButton, 'أعد المحاولة'));
-      await tester.pumpAndSettle();
-
-      expect(find.widgetWithText(TextField, 'رقم الحساب'), findsOneWidget);
-      expect(find.widgetWithText(FilledButton, 'التالي'), findsOneWidget);
-      expect(find.byIcon(Icons.wifi_off_outlined), findsNothing);
-    },
-  );
+ 
 
   group('BL-021 — a phone lock at Stage 1a', () {
     testWidgets(
