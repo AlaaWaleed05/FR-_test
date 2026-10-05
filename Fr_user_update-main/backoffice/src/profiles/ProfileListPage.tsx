@@ -24,7 +24,7 @@ import {
 
 const COLUMN_KEY_TO_SORT_FIELD: Record<string, ProfileListSortField> = {
   accountNumber: 'ACCOUNT_NUMBER',
-  branchCode: 'BRANCH',
+
   status: 'STATUS',
   submittedAt: 'SUBMITTED_AT',
 };
@@ -41,7 +41,7 @@ function sortOrderFor(
 interface Filters {
   status?: ProfileStatus;
   provenance?: ProfileProvenance;
-  branchCode?: string;
+ 
   rejectionReasonCode?: string;
   submittedFrom?: string;
   submittedTo?: string;
@@ -70,7 +70,7 @@ export default function ProfileListPage(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const branchList = useReferenceList('branch');
+  
   const rejectionReasonList = useReferenceList('rejection_reason');
   /**
    * NOT filtered on `isActive`, and that is the opposite of `RejectModal` on purpose.
@@ -86,11 +86,6 @@ export default function ProfileListPage(): React.JSX.Element {
     [rejectionReasonList.items],
   );
 
-  const branchLabelByCode = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const item of branchList.items) map.set(item.itemCode, item.labelAr);
-    return map;
-  }, [branchList.items]);
 
   useEffect(() => {
     // Guarded, not unconditional: this effect also runs on mount, so an unconditional
@@ -175,14 +170,7 @@ export default function ProfileListPage(): React.JSX.Element {
       title: 'الاسم',
       render: (_, record) => record.displayNameAr ?? record.displayNameEn ?? '—',
     },
-    {
-      key: 'branchCode',
-      dataIndex: 'branchCode',
-      title: 'الفرع',
-      sorter: true,
-      sortOrder: sortOrderFor('branchCode', sortField, sortOrder),
-      render: (branchCode: string) => branchLabelByCode.get(branchCode) ?? branchCode,
-    },
+    
     {
       key: 'status',
       dataIndex: 'status',
@@ -240,17 +228,7 @@ export default function ProfileListPage(): React.JSX.Element {
           value={filters.provenance}
           onChange={(value) => updateFilter('provenance', value)}
         />
-        <Select
-          allowClear
-          showSearch
-          placeholder="الفرع"
-          style={{ width: 200 }}
-          loading={branchList.loading}
-          optionFilterProp="label"
-          options={branchList.items.map((item) => ({ value: item.itemCode, label: item.labelAr }))}
-          value={filters.branchCode}
-          onChange={(value) => updateFilter('branchCode', value)}
-        />
+        
         <Select
           allowClear
           showSearch
@@ -275,7 +253,7 @@ export default function ProfileListPage(): React.JSX.Element {
           }}
         />
       </Space>
-      {(branchList.error || rejectionReasonList.error) && (
+      {(rejectionReasonList.error) && (
         <Alert
           type="warning"
           showIcon
@@ -285,7 +263,7 @@ export default function ProfileListPage(): React.JSX.Element {
             <Button
               size="small"
               onClick={() => {
-                branchList.retry();
+               
                 rejectionReasonList.retry();
               }}
             >
