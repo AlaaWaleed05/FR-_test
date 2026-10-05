@@ -20,11 +20,11 @@ class DioEntryApi implements EntryApi {
   };
 
   @override
-  Future<AccountCheckResult> checkAccount(String branch, String accountNumber) async {
+  Future<AccountCheckResult> checkAccount(String accountNumber) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/api/v1/account-check',
-        data: {'branch': branch, 'accountNumber': accountNumber},
+        data: {'accountNumber': accountNumber},
       );
       final body = response.data!;
       return AccountCheckResult(
@@ -44,7 +44,7 @@ class DioEntryApi implements EntryApi {
 
   @override
   Future<ContactChannelsResult> submitContactChannels({
-    required String branch,
+    
     required String accountNumber,
     required String phoneNumber,
     required bool sms,
@@ -55,7 +55,7 @@ class DioEntryApi implements EntryApi {
       final response = await _dio.post<Map<String, dynamic>>(
         '/api/v1/contact-channels',
         data: {
-          'branch': branch,
+          
           'accountNumber': accountNumber,
           'phoneNumber': phoneNumber,
           'sms': sms,
