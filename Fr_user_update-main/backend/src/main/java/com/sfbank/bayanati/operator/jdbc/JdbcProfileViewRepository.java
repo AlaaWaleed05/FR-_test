@@ -39,7 +39,7 @@ public class JdbcProfileViewRepository implements ProfileViewRepository {
 
   private static final String PROFILE_ROW =
       """
-      SELECT p.profile_id, p.reference_number, p.branch_code, p.account_number, p.status,
+      SELECT p.profile_id, p.reference_number, p.account_number, p.status,
              app.derived_provenance(p.profile_id, p.provenance) AS provenance,
              p.submitted_at, p.created_at, p.last_activity_at,
              pcd.phone_number, pcd.email_address, pcd.sex_declared, pcd.marital_status, pcd.spouse_name,
@@ -180,7 +180,7 @@ public class JdbcProfileViewRepository implements ProfileViewRepository {
         new ProfileDetail(
             base.profileId(),
             base.referenceNumber(),
-            base.branchCode(),
+           
             base.accountNumber(),
             base.status(),
             base.provenance(),
@@ -227,7 +227,7 @@ public class JdbcProfileViewRepository implements ProfileViewRepository {
     return new ProfileDetail(
         rs.getString("profile_id"),
         rs.getString("reference_number"),
-        rs.getString("branch_code"),
+        
         rs.getString("account_number"),
         rs.getString("status"),
         rs.getString("provenance"),
