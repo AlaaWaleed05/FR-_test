@@ -61,7 +61,7 @@ class _ContactChannelsScreenState extends ConsumerState<ContactChannelsScreen> {
   /// (`EntryRepository.verifiedAccount()`) — deliberately NOT read from `LocalDraft`, which the
   /// customer could in principle have gone back and edited without re-running Stage 1a. Found
   /// under review, S5-02.
-  String? _branchCode;
+  
   String? _accountNumber;
 
   /// Tracks whether the email field was non-empty as of the last edit, so the listener below can
@@ -92,8 +92,8 @@ class _ContactChannelsScreenState extends ConsumerState<ContactChannelsScreen> {
     final verified = await repository.verifiedAccount();
     if (!mounted || _abandoned) return;
     setState(() {
-      _branchCode = verified?.branchCode;
-      _accountNumber = verified?.accountNumber;
+    
+      _accountNumber = await repository.verifiedAccount();
       _phoneController.text = draft.phoneNumber ?? '';
       _emailController.text = draft.emailAddress ?? '';
       _smsSelected = draft.smsSelected;
@@ -168,9 +168,9 @@ class _ContactChannelsScreenState extends ConsumerState<ContactChannelsScreen> {
   }
 
   Future<void> _submit() async {
-    final branchCode = _branchCode;
+   
     final accountNumber = _accountNumber;
-    if (branchCode == null ||
+    if (
         accountNumber == null ||
         _bothPhoneChannelsDeselected ||
         !_phoneProvided) {
@@ -186,7 +186,7 @@ class _ContactChannelsScreenState extends ConsumerState<ContactChannelsScreen> {
       await ref
           .read(entryRepositoryProvider)
           .submitContactChannels(
-            branch: branchCode,
+            
             accountNumber: accountNumber,
             phoneNumber: _phoneController.text.trim(),
             sms: _smsSelected,
@@ -300,7 +300,7 @@ class _ContactChannelsScreenState extends ConsumerState<ContactChannelsScreen> {
         !widget.offline &&
         !_bothPhoneChannelsDeselected &&
         _phoneProvided &&
-        _branchCode != null &&
+        
         _accountNumber != null;
 
     return Scaffold(
