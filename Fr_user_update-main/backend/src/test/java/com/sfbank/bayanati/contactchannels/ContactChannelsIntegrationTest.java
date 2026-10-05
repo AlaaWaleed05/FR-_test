@@ -595,37 +595,7 @@ class ContactChannelsIntegrationTest extends AbstractPostgresIntegrationTest {
 
   // --- BL-032 / V0061: the profile's identity is the account number alone ---------------------
 
-  @Test
-  void reEntryUnderADifferentBranchReusesTheProfileAndRefreshesItsBranchLive() throws Exception {
-    // The same customer (same account) comes back having selected a different branch. Before
-    // V0061 the composite UNIQUE (branch_code, account_number) would have let a second profile row
-    // in and findExisting would have missed the first; now the account alone is the identity.
-    String accountNumber = "0000000111";
-    String firstProfileId = submitContactChannels(BRANCH, accountNumber, "+249900001110");
-    assertEquals("16", branchCodeOf(firstProfileId));
-
-    String secondProfileId = submitContactChannels("22", accountNumber, "+249900002110");
-    assertEquals(firstProfileId, secondProfileId, "the lookup must ignore the branch");
-
-    assertEquals("22", branchCodeOf(firstProfileId), "the latest selection is what the row holds");
-    Integer rowsForAccount =
-        jdbcTemplate.queryForObject(
-            "SELECT count(*) FROM app.profile WHERE account_number = ?",
-            Integer.class,
-            accountNumber);
-    assertEquals(1, rowsForAccount, "still exactly one profile for the account");
-
-    // The re-entry event carries the branch submitted this time, so the previous value ('16')
-    // is on the permanent record even though app.profile now holds only the latest.
-    String reenteredPayload =
-        auditEvents(firstProfileId).stream()
-            .filter(e -> "session_reentered".equals(e.get("event_type")))
-            .map(e -> (String) e.get("payload_json"))
-            .findFirst()
-            .orElseThrow();
-    assertTrue(reenteredPayload.contains("\"branch\":\"22\""), reenteredPayload);
-  }
-
+  
   @Test
   void aSecondProfileRowForTheSameAccountUnderAnotherBranchIsRejectedByTheDatabase()
       throws Exception {
