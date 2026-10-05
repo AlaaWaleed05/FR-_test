@@ -131,7 +131,7 @@ class ContactChannelsServiceTest {
         .insertOtpChallenge(any(), any(), any(), any(), any(), any(), any());
     verify(messageSender, times(3)).send(any());
     verify(profileRepository).ensureAuditChain(any());
-    verify(profileRepository).insertProfile(any(), eq("16"), eq("0000000001"), eq(NOW), eq(1L));
+    verify(profileRepository).insertProfile(any(), eq("0000000001"), eq(NOW), eq(1L));
     verify(profileRepository)
         .insertContactDetails(any(), eq("+249900004821"), eq("ahmed@example.invalid"), eq(NOW));
 
@@ -428,10 +428,10 @@ class ContactChannelsServiceTest {
         service(allEnabled()).submit("16", "0000000001", "+249900002222", true, true, null);
 
     assertEquals(existingProfileId, result.profileId());
-    verify(profileRepository, never()).insertProfile(any(), any(), any(), any(), anyLong());
+    verify(profileRepository, never()).insertProfile(any(), any(), any(), anyLong());
     verify(profileRepository, never()).insertContactDetails(any(), any(), any(), any());
     verify(profileRepository).updateContactDetails(existingProfileId, "+249900002222", null, NOW);
-    verify(profileRepository).updateBranchCode(existingProfileId, "16");
+    
     verify(profileRepository).invalidateOtpChallenges(existingProfileId, NOW);
     verify(profileRepository).touchLastActivity(existingProfileId, NOW);
     verify(profileRepository, never()).reactivateFromAbandoned(any(), any(), anyLong());
@@ -486,8 +486,8 @@ class ContactChannelsServiceTest {
 
     assertEquals(existingProfileId, result.profileId());
     verify(profileRepository).findExisting("0000000001");
-    verify(profileRepository, never()).insertProfile(any(), any(), any(), any(), anyLong());
-    verify(profileRepository).updateBranchCode(existingProfileId, "22");
+    verify(profileRepository, never()).insertProfile(any(), any(), any(), anyLong());
+    
 
     // The re-entry event carries the branch submitted this time, so the previous value is
     // recoverable from the chain even though app.profile now holds only the latest.
@@ -536,7 +536,7 @@ class ContactChannelsServiceTest {
                 .submit("16", "0000000001", "+249900002222", true, true, "a@example.invalid"));
 
     verifyNoInteractions(messageSender);
-    verify(profileRepository, never()).insertProfile(any(), any(), any(), any(), anyLong());
+    verify(profileRepository, never()).insertProfile(any(), any(), any(), anyLong());
     verify(profileRepository, never()).updateContactDetails(any(), any(), any(), any());
     verify(profileRepository, never()).upsertChannel(any(), any(), any());
     verify(profileRepository, never())
@@ -570,7 +570,7 @@ class ContactChannelsServiceTest {
     // The OTPs were already sent before the race was caught -- that part cannot be undone -- but
     // no write to app.* may follow.
     verify(profileRepository, never()).updateContactDetails(any(), any(), any(), any());
-    verify(profileRepository, never()).updateBranchCode(any(), any());
+    
     verify(profileRepository, never()).invalidateOtpChallenges(any(), any());
     verify(profileRepository, never()).upsertChannel(any(), any(), any());
     verify(profileRepository, never()).touchLastActivity(any(), any());
