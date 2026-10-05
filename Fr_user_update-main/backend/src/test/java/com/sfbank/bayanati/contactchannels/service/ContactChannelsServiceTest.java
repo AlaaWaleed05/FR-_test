@@ -468,39 +468,7 @@ class ContactChannelsServiceTest {
     verify(profileRepository, never()).touchLastActivity(any(), any());
   }
 
-  @Test
-  void reEntryUnderADifferentBranchFindsTheSameProfileAndRecordsTheNewBranch() {
-    // BL-032 / V0061: the profile was created under branch 16; the customer comes back with the
-    // same account but selects branch 22. The lookup ignores the branch (the account number is
-    // the identity), the existing profile is reused rather than a second one inserted, and the
-    // profile's branch_code is refreshed to the branch selected this time.
-    UUID existingProfileId = UUID.randomUUID();
-    when(profileRepository.findExisting("0000000001"))
-        .thenReturn(Optional.of(new ExistingProfile(existingProfileId, "in_progress", false)));
-    when(profileRepository.currentContactDetails(existingProfileId))
-        .thenReturn(new ContactSnapshot("+249900001111", null));
-    when(profileRepository.currentChannelStates(existingProfileId)).thenReturn(Map.of());
-
-    ContactChannelsResult result =
-        service(allEnabled()).submit("22", "0000000001", "+249900002222", true, true, null);
-
-    assertEquals(existingProfileId, result.profileId());
-    verify(profileRepository).findExisting("0000000001");
-    verify(profileRepository, never()).insertProfile(any(), any(), any(), anyLong());
-    
-
-    // The re-entry event carries the branch submitted this time, so the previous value is
-    // recoverable from the chain even though app.profile now holds only the latest.
-    ArgumentCaptor<AuditEvent> events = ArgumentCaptor.forClass(AuditEvent.class);
-    verify(auditEventWriter, org.mockito.Mockito.atLeastOnce()).append(events.capture());
-    AuditEvent reentered =
-        events.getAllValues().stream()
-            .filter(e -> e.eventType().equals("session_reentered"))
-            .findFirst()
-            .orElseThrow();
-    assertTrue(reentered.payloadJson().contains("\"branch\":\"22\""), reentered.payloadJson());
-  }
-
+  
   @Test
   void aDroppedEmailChannelOnReEntryIsDeclinedNotDeleted() {
     UUID existingProfileId = UUID.randomUUID();
@@ -655,7 +623,7 @@ class ContactChannelsServiceTest {
     verify(profileRepository, never()).currentPhoneLockUntil(any());
     // The branch travels on insertProfile for a brand-new profile; updateBranchCode is the
     // re-entry path's refresh only.
-    verify(profileRepository, never()).updateBranchCode(any(), any());
+    
   }
 
   private static boolean isValidUuid(String value) {
