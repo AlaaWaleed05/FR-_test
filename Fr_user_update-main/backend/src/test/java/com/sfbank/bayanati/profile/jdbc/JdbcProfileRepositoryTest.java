@@ -77,7 +77,7 @@ class JdbcProfileRepositoryTest {
     assertTrue(profileSql.contains("'in_progress'"), profileSql);
     assertEquals(profileId.toString(), profileArgs[0]);
     
-    assertEquals("0000000001", profileArgs[2]);
+    assertEquals("0000000001", profileArgs[1]);
 
     String historySql = sql.getAllValues().get(1);
     Object[] historyArgs = args.getAllValues().get(1);
