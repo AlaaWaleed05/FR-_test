@@ -208,7 +208,7 @@ public class JdbcProfileRepository implements ProfileRepository {
     jdbcTemplate.query(LOCK_PROFILE_ROW, ps -> ps.setString(1, profileId.toString()), rs -> null);
   }
 
-  @Ovwerride
+  @Override
   public void insertProfile(
     UUID profileId, String accountNumber, Instant now, long auditEventId) {
 
