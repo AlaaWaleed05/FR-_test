@@ -28,7 +28,7 @@ public final class PrintedFormVocabulary {
   private PrintedFormVocabulary() {}
 
   /** {@code ref.reference_list} codes, exactly as the seed migrations declare them. */
-  public static final String LIST_BRANCH = "branch";
+  
 
   public static final String LIST_OCCUPATION = "occupation";
   public static final String LIST_ADMIN_DIVISION = "admin_division";
