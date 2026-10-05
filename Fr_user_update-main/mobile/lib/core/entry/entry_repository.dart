@@ -151,7 +151,7 @@ class EntryRepository {
           .insertOnConflictUpdate(
             LocalProgressCompanion.insert(
               id: const Value(0),
-              verifiedBranchCode: branch,
+              
               verifiedAccountNumber: accountNumber,
               resumeStage: _resumeStageContactChannels,
               updatedAt: DateTime.now(),
@@ -184,7 +184,7 @@ class EntryRepository {
         .insertOnConflictUpdate(
           LocalProgressCompanion.insert(
             id: const Value(0),
-            verifiedBranchCode: branch,
+           
             verifiedAccountNumber: accountNumber,
             resumeStage: _resumeStageAwaitingVerification,
             profileId: Value(result.profileId),
