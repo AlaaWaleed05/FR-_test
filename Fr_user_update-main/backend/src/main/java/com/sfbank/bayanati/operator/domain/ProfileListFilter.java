@@ -14,7 +14,7 @@ import java.time.Instant;
 public record ProfileListFilter(
     String status,
     String provenance,
-    String branchCode,
+ 
     String rejectionReasonCode,
     Instant submittedFrom,
     Instant submittedTo,
