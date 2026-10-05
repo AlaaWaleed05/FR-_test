@@ -49,7 +49,7 @@ public class ContactChannelsController {
    */
   @PostMapping
   public ContactChannelsResponse submit(@RequestBody ContactChannelsRequest request) {
-    String branch = clean(request.branch(), "branch", MAX_FIELD_LENGTH);
+    
     String accountNumber = clean(request.accountNumber(), "accountNumber", MAX_FIELD_LENGTH);
     String phoneNumber =
         normalizePhone(clean(request.phoneNumber(), "phoneNumber", MAX_FIELD_LENGTH));
@@ -59,7 +59,7 @@ public class ContactChannelsController {
     try {
       result =
           contactChannelsService.submit(
-              branch,
+             
               accountNumber,
               phoneNumber,
               request.smsSelected(),
