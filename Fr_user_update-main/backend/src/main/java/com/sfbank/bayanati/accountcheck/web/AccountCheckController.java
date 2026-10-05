@@ -48,10 +48,10 @@ public class AccountCheckController {
    */
   @PostMapping
   public AccountCheckResponse check(@RequestBody AccountCheckRequest request) {
-    String branch = clean(request.branch(), "branch");
+    
     String accountNumber = clean(request.accountNumber(), "accountNumber");
 
-    AccountCheckResult result = accountCheckService.check(branch, accountNumber);
+    AccountCheckResult result = accountCheckService.check(accountNumber);
 
     return new AccountCheckResponse(
         result.outcome(),
