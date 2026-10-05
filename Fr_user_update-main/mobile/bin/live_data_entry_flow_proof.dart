@@ -46,7 +46,7 @@ Future<void> main(List<String> args) async {
   final entryApi = DioEntryApi(Dio(BaseOptions(baseUrl: baseUrl)));
   stdout.writeln('--- Stage 1a/1b: obtaining a profile ---');
   final contactResult = await entryApi.submitContactChannels(
-    branch: '16',
+    
     accountNumber: '0000000001',
     phoneNumber: '0912345678',
     sms: true,
@@ -95,7 +95,7 @@ Future<void> seedLocalProgress(SessionDatabase db, String profileId, String stag
       .insertOnConflictUpdate(
         LocalProgressCompanion.insert(
           id: const Value(0),
-          verifiedBranchCode: '16',
+          
           verifiedAccountNumber: '0000000001',
           resumeStage: stage,
           profileId: Value(profileId),
