@@ -176,7 +176,7 @@ public class ContactChannelsService {
    *     audited.
    */
   public ContactChannelsResult submit(
-      String branchCode,
+      
       String accountNumber,
       String phoneNumber,
       boolean smsSelected,
@@ -199,7 +199,7 @@ public class ContactChannelsService {
     Optional<ExistingProfile> existing = profileRepository.findExisting(accountNumber);
 
     if (existing.isPresent() && existing.get().terminal()) {
-      rejectTerminalReentry(existing.get(), requestId, branchCode, accountNumber);
+      rejectTerminalReentry(existing.get(), requestId, accountNumber);
     }
 
     boolean reentry = existing.isPresent();
@@ -207,7 +207,7 @@ public class ContactChannelsService {
     Instant now = clock.instant();
 
     if (reentry) {
-      checkPhoneLockNotActive(profileId, requestId, branchCode, accountNumber, now);
+      checkPhoneLockNotActive(profileId, requestId, accountNumber, now);
     }
 
     Instant expiresAt = now.plus(OTP_VALIDITY);
@@ -272,7 +272,7 @@ public class ContactChannelsService {
                     sessionReenteredEvent(
                         profileId,
                         requestId,
-                        branchCode,
+                        
                         accountNumber,
                         decisions,
                         smsSelected,
@@ -329,7 +329,7 @@ public class ContactChannelsService {
                     sessionCreatedEvent(
                         profileId,
                         requestId,
-                        branchCode,
+                      
                         accountNumber,
                         decisions,
                         smsSelected,
@@ -371,7 +371,7 @@ public class ContactChannelsService {
           contactChannelsRejectedEvent(
               profileId,
               requestId,
-              branchCode,
+              
               accountNumber,
               currentStatus,
               "profile_became_complete_during_processing",
@@ -379,8 +379,7 @@ public class ContactChannelsService {
       throw new ProfileAlreadyCompleteException(
           "account "
               + accountNumber
-              + " at branch "
-              + branchCode
+              
               + " completed its profile while this request was in flight");
     }
 
@@ -404,12 +403,12 @@ public class ContactChannelsService {
    * control to the caller as an exception.
    */
   private void rejectTerminalReentry(
-      ExistingProfile existing, UUID requestId, String branchCode, String accountNumber) {
+      ExistingProfile existing, UUID requestId, String accountNumber) {
     auditEventWriter.append(
         contactChannelsRejectedEvent(
             existing.profileId(),
             requestId,
-            branchCode,
+            
             accountNumber,
             existing.status(),
             "profile_already_complete",
@@ -417,8 +416,7 @@ public class ContactChannelsService {
     throw new ProfileAlreadyCompleteException(
         "account "
             + accountNumber
-            + " at branch "
-            + branchCode
+            
             + " already has a completed profile");
   }
 
@@ -431,14 +429,14 @@ public class ContactChannelsService {
    * to consult.
    */
   private void checkPhoneLockNotActive(
-      UUID profileId, UUID requestId, String branchCode, String accountNumber, Instant now) {
+      UUID profileId, UUID requestId, String accountNumber, Instant now) {
     Optional<Instant> blockedUntil = profileRepository.currentPhoneLockUntil(profileId);
     if (blockedUntil.isPresent() && blockedUntil.get().isAfter(now)) {
       auditEventWriter.append(
           contactChannelsRejectedEvent(
               profileId,
               requestId,
-              branchCode,
+             
               accountNumber,
               null,
               "phone_temporarily_blocked",
@@ -461,13 +459,13 @@ public class ContactChannelsService {
   private static AuditEvent contactChannelsRejectedEvent(
       UUID profileId,
       UUID requestId,
-      String branchCode,
+      
       String accountNumber,
       String profileStatus,
       String reason,
       String blockedUntilIso) {
     Map<String, Object> payload = new LinkedHashMap<>();
-    payload.put("branch", branchCode);
+    
     payload.put("accountNumber", accountNumber);
     payload.put("profileStatus", profileStatus);
     payload.put("reason", reason);
@@ -537,14 +535,14 @@ public class ContactChannelsService {
   private static AuditEvent sessionCreatedEvent(
       UUID profileId,
       UUID requestId,
-      String branchCode,
+      
       String accountNumber,
       List<ChannelDecision> decisions,
       boolean smsSelected,
       boolean whatsappSelected,
       boolean emailPresent) {
     Map<String, Object> payload = new LinkedHashMap<>();
-    payload.put("branch", branchCode);
+    
     payload.put("accountNumber", accountNumber);
     payload.put("smsSelected", smsSelected);
     payload.put("smsChallenged", challenged(decisions, MessageChannel.SMS));
@@ -576,7 +574,7 @@ public class ContactChannelsService {
   private static AuditEvent sessionReenteredEvent(
       UUID profileId,
       UUID requestId,
-      String branchCode,
+      
       String accountNumber,
       List<ChannelDecision> decisions,
       boolean smsSelected,
@@ -585,7 +583,7 @@ public class ContactChannelsService {
       Map<MessageChannel, ChannelState> previousStates,
       ContactSnapshot previousContact) {
     Map<String, Object> payload = new LinkedHashMap<>();
-    payload.put("branch", branchCode);
+    
     payload.put("accountNumber", accountNumber);
     payload.put("previousPhoneNumber", previousContact.phoneNumber());
     payload.put("previousEmailAddress", previousContact.emailAddress());
