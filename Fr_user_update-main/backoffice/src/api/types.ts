@@ -30,7 +30,7 @@ export type ProfileProvenance = 'digital' | 'manual';
 export interface ProfileSummaryResponse {
   profileId: string;
   accountNumber: string;
-  branchCode: string;
+  
   displayNameAr: string | null;
   displayNameEn: string | null;
   status: ProfileStatus;
@@ -44,13 +44,13 @@ export interface ProfileListResponse {
   total: number;
 }
 
-export type ProfileListSortField = 'SUBMITTED_AT' | 'ACCOUNT_NUMBER' | 'STATUS' | 'BRANCH';
+export type ProfileListSortField = 'SUBMITTED_AT' | 'ACCOUNT_NUMBER' | 'STATUS' ;
 export type SortOrder = 'ASC' | 'DESC';
 
 export interface ProfileListQuery {
   status?: string;
   provenance?: string;
-  branchCode?: string;
+ 
   rejectionReasonCode?: string;
   submittedFrom?: string;
   submittedTo?: string;
@@ -306,7 +306,7 @@ export type SalaryCertificateState = 'PRESENT' | 'ATTACH_FAILED' | 'DECLINED' | 
 export interface ProfileDetailResponse {
   profileId: string;
   referenceNumber: string;
-  branchCode: string;
+  
   accountNumber: string;
   status: ProfileStatus;
   provenance: ProfileProvenance;
