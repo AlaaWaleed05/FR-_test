@@ -37,12 +37,13 @@ public class JdbcProfileRepository implements ProfileRepository {
    * 1b actually knows.
    */
   private static final String INSERT_PROFILE =
-      """
-      INSERT INTO app.profile
-        (profile_id, branch_code, account_number, status, status_changed_at,
-         created_at, last_activity_at)
-      VALUES (?::uuid, ?::text, ?::text, 'in_progress', ?::timestamptz, ?::timestamptz, ?::timestamptz)
-      """;
+    """
+    INSERT INTO app.profile
+      (profile_id, account_number, status, status_changed_at,
+       created_at, last_activity_at)
+    VALUES (?::uuid, ?::text, 'in_progress', ?::timestamptz,
+            ?::timestamptz, ?::timestamptz)
+    """;
 
   /**
    * {@code seq=1}: the first history row for a brand-new profile. {@code from_status} is explicitly
@@ -155,8 +156,7 @@ public class JdbcProfileRepository implements ProfileRepository {
       "UPDATE app.profile SET last_activity_at = ?::timestamptz WHERE profile_id = ?::uuid";
 
   /** No {@code row_version} bump, deliberately — see {@code ProfileRepository#updateBranchCode}. */
-  private static final String UPDATE_BRANCH_CODE =
-      "UPDATE app.profile SET branch_code = ?::text WHERE profile_id = ?::uuid";
+  
 
   private static final String REACTIVATE_FROM_ABANDONED =
       """
@@ -209,21 +209,34 @@ public class JdbcProfileRepository implements ProfileRepository {
   }
 
   @Override
+ 
   public void insertProfile(
-      UUID profileId, String branchCode, String accountNumber, Instant now, long auditEventId) {
-    String nowText = now.toString();
-    jdbcTemplate.update(
-        INSERT_PROFILE,
-        new Object[] {profileId.toString(), branchCode, accountNumber, nowText, nowText, nowText},
-        new int[] {
-          Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR
-        });
-    jdbcTemplate.update(
-        INSERT_FIRST_STATUS_HISTORY,
-        new Object[] {profileId.toString(), auditEventId},
-        new int[] {Types.VARCHAR, Types.BIGINT});
-  }
+    
+    UUID profileId, String accountNumber, Instant now, long auditEventId) {
+  String nowText = now.toString();
 
+  jdbcTemplate.update(
+      INSERT_PROFILE,
+      new Object[] {
+        profileId.toString(),
+        accountNumber,
+        nowText,
+        nowText,
+        nowText
+      },
+      new int[] {
+        Types.VARCHAR,
+        Types.VARCHAR,
+        Types.VARCHAR,
+        Types.VARCHAR,
+        Types.VARCHAR
+      });
+
+  jdbcTemplate.update(
+      INSERT_FIRST_STATUS_HISTORY,
+      new Object[] {profileId.toString(), auditEventId},
+      new int[] {Types.VARCHAR, Types.BIGINT});
+}
   @Override
   public void insertContactDetails(
       UUID profileId, String phoneNumber, String emailAddress, Instant now) {
@@ -368,13 +381,7 @@ public class JdbcProfileRepository implements ProfileRepository {
         new int[] {Types.VARCHAR, Types.VARCHAR});
   }
 
-  @Override
-  public void updateBranchCode(UUID profileId, String branchCode) {
-    jdbcTemplate.update(
-        UPDATE_BRANCH_CODE,
-        new Object[] {branchCode, profileId.toString()},
-        new int[] {Types.VARCHAR, Types.VARCHAR});
-  }
+  
 
   @Override
   public void reactivateFromAbandoned(UUID profileId, Instant now, long auditEventId) {
