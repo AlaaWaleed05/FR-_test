@@ -147,7 +147,7 @@ public class AccountCheckService {
    * @throws IllegalArgumentException if the middleware returns a parseable code outside its stated
    *     contract — after the attempt has been recorded
    */
-  public AccountCheckResult check(String branchCode, String accountNumber) {
+  public AccountCheckResult check(String accountNumber) {
     UUID requestId = UUID.randomUUID();
 
     CoreBankingCheckResult result;
@@ -156,7 +156,7 @@ public class AccountCheckService {
     } catch (CoreBankingUnavailableException unavailable) {
       auditBeforeRethrow(
           unavailable,
-          new Attempt(branchCode, accountNumber, requestId, null, unavailable.exchange()),
+          new Attempt(accountNumber, requestId, null, unavailable.exchange()),
           OUTCOME_CALL_FAILED,
           null,
           null,
@@ -165,7 +165,7 @@ public class AccountCheckService {
     } catch (RuntimeException callFailed) {
       auditBeforeRethrow(
           callFailed,
-          new Attempt(branchCode, accountNumber, requestId, null, null),
+          new Attempt(accountNumber, requestId, null, null),
           OUTCOME_CALL_FAILED,
           null,
           null,
@@ -173,7 +173,7 @@ public class AccountCheckService {
       throw callFailed;
     }
 
-    Attempt attempt = new Attempt(branchCode, accountNumber, requestId, result, result.exchange());
+    Attempt attempt = new Attempt(accountNumber, requestId, result, result.exchange());
 
     if (result.code() == CoreBankingCheckResult.SYSTEM_ERROR) {
       // The middleware was reached and said "System Error". Not a journey outcome the customer
@@ -258,7 +258,7 @@ public class AccountCheckService {
 
   /** One attempt's identity and raw material, threaded through the audit helpers. */
   private record Attempt(
-      String branchCode,
+      
       String accountNumber,
       UUID requestId,
       CoreBankingCheckResult result,
@@ -292,7 +292,7 @@ public class AccountCheckService {
     RawExchange exchange = attempt.exchange();
     if (exchange != null && exchange.requestBody() != null) {
       Map<String, Object> requestPayload = new LinkedHashMap<>();
-      requestPayload.put("branch", attempt.branchCode());
+      
       requestPayload.put("accountNumber", attempt.accountNumber());
       auditEventWriter.appendWithArtifact(
           event(attempt, REQUEST_EVENT_TYPE, CanonicalJson.object(requestPayload)),
@@ -307,7 +307,7 @@ public class AccountCheckService {
     // account tried to resubmit after already completing").
     CoreBankingCheckResult result = attempt.result();
     Map<String, Object> payload = new LinkedHashMap<>();
-    payload.put("branch", attempt.branchCode());
+    
     payload.put("accountNumber", attempt.accountNumber());
     payload.put("resultCode", result == null ? null : result.code());
     payload.put("responseMessage", result == null ? null : result.message());
