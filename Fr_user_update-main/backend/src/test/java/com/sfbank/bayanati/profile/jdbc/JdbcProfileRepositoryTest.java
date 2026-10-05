@@ -64,7 +64,7 @@ class JdbcProfileRepositoryTest {
     UUID profileId = UUID.randomUUID();
     Instant now = Instant.parse("2026-08-29T12:00:00Z");
 
-    repository.insertProfile(profileId, "16", "0000000001", now, 42L);
+    repository.insertProfile(profileId, "0000000001", now, 42L);
 
     ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
     ArgumentCaptor<Object[]> args = ArgumentCaptor.forClass(Object[].class);
@@ -76,7 +76,7 @@ class JdbcProfileRepositoryTest {
     assertTrue(profileSql.contains("INSERT INTO app.profile"), profileSql);
     assertTrue(profileSql.contains("'in_progress'"), profileSql);
     assertEquals(profileId.toString(), profileArgs[0]);
-    assertEquals("16", profileArgs[1]);
+    
     assertEquals("0000000001", profileArgs[2]);
 
     String historySql = sql.getAllValues().get(1);
@@ -342,26 +342,7 @@ class JdbcProfileRepositoryTest {
     assertEquals(profileId.toString(), args.getValue()[1]);
   }
 
-  @Test
-  void updateBranchCodeWritesOnlyBranchCodeWithNoRowVersionBump() {
-    // BL-032 / V0061: the re-entry refresh of a descriptive column -- same posture as
-    // touchLastActivity: no status change, no row_version bump.
-    UUID profileId = UUID.randomUUID();
-
-    repository.updateBranchCode(profileId, "22");
-
-    ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
-    ArgumentCaptor<Object[]> args = ArgumentCaptor.forClass(Object[].class);
-    verify(jdbcTemplate).update(sql.capture(), args.capture(), any(int[].class));
-
-    assertTrue(sql.getValue().contains("UPDATE app.profile"), sql.getValue());
-    assertTrue(sql.getValue().contains("SET branch_code"), sql.getValue());
-    assertFalse(sql.getValue().contains("row_version"), sql.getValue());
-    assertFalse(sql.getValue().contains("status"), sql.getValue());
-    assertEquals("22", args.getValue()[0]);
-    assertEquals(profileId.toString(), args.getValue()[1]);
-  }
-
+ 
   @Test
   void reactivateFromAbandonedUpdatesTheProfileThenInsertsTheHistoryRow() {
     UUID profileId = UUID.randomUUID();
