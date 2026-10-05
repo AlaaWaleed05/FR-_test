@@ -199,19 +199,18 @@ sealed class LaunchDecision {
 class FreshStart extends LaunchDecision {
   const FreshStart({this.draftBranchCode, this.draftAccountNumber});
 
-  final String? draftBranchCode;
+ 
   final String? draftAccountNumber;
 }
 
 /// 1a passed, 1b not yet submitted — resume directly on the Stage 1b screen.
 class ResumeContactChannels extends LaunchDecision {
   const ResumeContactChannels({
-    required this.branchCode,
+    
     required this.accountNumber,
     required this.offline,
   });
 
-  final String branchCode;
   final String accountNumber;
 
   /// True when the backend could not be reached to confirm this resume — the screen must show
