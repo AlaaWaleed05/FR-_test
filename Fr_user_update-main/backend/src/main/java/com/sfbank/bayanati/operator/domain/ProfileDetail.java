@@ -28,7 +28,7 @@ import java.util.List;
 public record ProfileDetail(
     String profileId,
     String referenceNumber,
-    String branchCode,
+    
     String accountNumber,
     String status,
     String provenance,
@@ -50,7 +50,7 @@ public record ProfileDetail(
     return new ProfileDetail(
         profileId,
         referenceNumber,
-        branchCode,
+        
         accountNumber,
         status,
         provenance,
