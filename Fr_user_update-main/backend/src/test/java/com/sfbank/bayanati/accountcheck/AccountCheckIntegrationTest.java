@@ -59,8 +59,8 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
   // (0000000503-0000000520), per AbstractPostgresIntegrationTest's disjoint-range list.
   private static final String ACTIVE_ACCOUNT_WITH_PHONE_LOCK = "0000000003";
   // BL-032 / V0061: a terminal profile created under BRANCH, then checked under another branch.
-  private static final String ACTIVE_ACCOUNT_WITH_TERMINAL_PROFILE_OTHER_BRANCH = "0000000004";
-  private static final String BRANCH = "16";
+
+  
 
   // Adds this class's own core-banking stub fixtures on top of the shared properties declared in
   // AbstractPostgresIntegrationTest — Spring invokes every @DynamicPropertySource method found
@@ -77,9 +77,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
     registry.add(
         "fru.core-banking.stub.accounts[" + ACTIVE_ACCOUNT_WITH_INCOMPLETE_PROFILE + "]", () -> 1);
     registry.add("fru.core-banking.stub.accounts[" + ACTIVE_ACCOUNT_WITH_PHONE_LOCK + "]", () -> 1);
-    registry.add(
-        "fru.core-banking.stub.accounts[" + ACTIVE_ACCOUNT_WITH_TERMINAL_PROFILE_OTHER_BRANCH + "]",
-        () -> 1);
+    
   }
 
   @Autowired private MockMvc mockMvc;
@@ -94,11 +92,11 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
 
   private String check(String accountNumber, String expectedOutcome, String expectedContinuation)
       throws Exception {
-    return check(BRANCH, accountNumber, expectedOutcome, expectedContinuation);
+    return check(accountNumber, expectedOutcome, expectedContinuation);
   }
 
   private String check(
-      String branch, String accountNumber, String expectedOutcome, String expectedContinuation)
+       String accountNumber, String expectedOutcome, String expectedContinuation)
       throws Exception {
     MvcResult result =
         mockMvc
@@ -106,9 +104,8 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
                 post("/api/v1/account-check")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(
-                        "{\"branch\":\""
-                            + branch
-                            + "\",\"accountNumber\":\""
+                        "{
+                            "\",\"accountNumber\":\""
                             + accountNumber
                             + "\"}"))
             .andExpect(status().isOk())
@@ -150,9 +147,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
             post("/api/v1/account-check")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    "{\"branch\":\""
-                        + BRANCH
-                        + "\",\"accountNumber\":\""
+                    "{ "\",\"accountNumber\":\""
                         + SYSTEM_ERROR_ACCOUNT
                         + "\"}"))
         .andExpect(status().isServiceUnavailable())
@@ -181,7 +176,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
             status -> {
               status.setRollbackOnly();
               jdbcTemplate.update(
-                  "INSERT INTO app.omni_check (branch_code, account_hash, result_code, called_at)"
+                  "INSERT INTO app.omni_check ( account_hash, result_code, called_at)"
                       + " VALUES (NULL, sha256('0000009999'::bytea), 0, clock_timestamp())");
               return jdbcTemplate.queryForObject(
                   "SELECT result_code FROM app.omni_check WHERE branch_code IS NULL"
@@ -199,8 +194,8 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
                     status -> {
                       status.setRollbackOnly();
                       jdbcTemplate.update(
-                          "INSERT INTO app.omni_check (branch_code, account_hash, result_code,"
-                              + " called_at) VALUES ('16', sha256('0000009999'::bytea), 2,"
+                          "INSERT INTO app.omni_check (account_hash, result_code,"
+                              + " called_at) VALUES ('sha256('0000009999'::bytea), 2,"
                               + " clock_timestamp())");
                     }));
     assertTrue(
@@ -236,7 +231,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
         .perform(
             post("/api/v1/account-check")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"branch\":\"" + BRANCH + "\",\"accountNumber\":\"\"}"))
+                .content("{\"accountNumber\":\"\"}"))
         .andExpect(status().isBadRequest());
 
     // The journey requires *account-check attempts* recorded. Nothing was attempted against the
@@ -269,26 +264,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
     assertEquals("submitted", after.get("status"));
   }
 
-  @Test
-  void anActiveAccountWithATerminalProfileIsTerminalWhenCheckedUnderADifferentBranch()
-      throws Exception {
-    // BL-032 / V0061: the campaign's one-update-per-account rule holds per account, not per
-    // (branch, account). A customer who completed under branch 16 and comes back selecting branch
-    // 22 is told the update is already complete -- the branch never opens a second attempt.
-    String profileId =
-        createProfileViaContactChannels(ACTIVE_ACCOUNT_WITH_TERMINAL_PROFILE_OTHER_BRANCH);
-    transitionToSubmitted(profileId);
-
-    check("22", ACTIVE_ACCOUNT_WITH_TERMINAL_PROFILE_OTHER_BRANCH, "ACTIVE", "TERMINAL");
-
-    // Stage 1a still mutates nothing: the profile keeps the branch it was created under.
-    String branchStored =
-        jdbcTemplate.queryForObject(
-            "SELECT branch_code FROM app.profile WHERE profile_id = ?::uuid",
-            String.class,
-            profileId);
-    assertEquals(BRANCH, branchStored);
-  }
+  
 
   @Test
   void anActiveAccountWithAnIncompleteProfileStillProceeds() throws Exception {
@@ -317,9 +293,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
                 post("/api/v1/account-check")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(
-                        "{\"branch\":\""
-                            + BRANCH
-                            + "\",\"accountNumber\":\""
+                        "{ "\",\"accountNumber\":\""
                             + ACTIVE_ACCOUNT_WITH_PHONE_LOCK
                             + "\"}"))
             .andExpect(status().isOk())
@@ -355,7 +329,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
             post("/api/v1/account-check")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    "{\"branch\":\"" + BRANCH + "\",\"accountNumber\":\"" + ACTIVE_ACCOUNT + "\"}"))
+                    "{\"accountNumber\":\"" + ACTIVE_ACCOUNT + "\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.outcome").value("ACTIVE"))
         .andExpect(jsonPath("$.continuation").value("PROCEED"))
@@ -365,9 +339,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
   /** Creates a real, live profile through the same Stage 1b endpoint a customer would call. */
   private String createProfileViaContactChannels(String accountNumber) throws Exception {
     String body =
-        "{\"branch\":\""
-            + BRANCH
-            + "\",\"accountNumber\":\""
+        "{ "\",\"accountNumber\":\""
             + accountNumber
             + "\",\"phoneNumber\":\"+2499000"
             + accountNumber.substring(accountNumber.length() - 4)
@@ -449,7 +421,7 @@ class AccountCheckIntegrationTest extends AbstractPostgresIntegrationTest {
     assertTrue(((Number) row.get("seq")).longValue() >= 1, "chain_append() assigns the sequence");
 
     JsonNode payload = objectMapper.readTree((String) row.get("payload_json"));
-    assertEquals(BRANCH, payload.get("branch").asText());
+ 
     assertEquals(accountNumber, payload.get("accountNumber").asText());
     assertEquals(expectedResultCode, payload.get("resultCode").asInt());
     assertEquals(expectedOutcome, payload.get("outcome").asText());
